@@ -6,6 +6,8 @@ package request
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/inexio/go-monitoringplugin"
 	"github.com/inexio/thola/doc"
 	"github.com/inexio/thola/internal/network"
@@ -13,7 +15,6 @@ import (
 	"github.com/inexio/thola/internal/tholaerr"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
-	"strings"
 )
 
 func (r *IdentifyRequest) process(ctx context.Context) (Response, error) {
@@ -128,6 +129,10 @@ func (r *CheckHighAvailabilityRequest) process(ctx context.Context) (Response, e
 	return checkProcess(ctx, r, "check/high-availability"), nil
 }
 
+func (r *CheckUptimeRequest) process(ctx context.Context) (Response, error) {
+	return checkProcess(ctx, r, "check/uptime"), nil
+}
+
 func (r *ReadInterfacesRequest) process(ctx context.Context) (Response, error) {
 	apiFormat := viper.GetString("target-api-format")
 	responseBody, err := sendToAPI(ctx, r, "read/interfaces", apiFormat)
@@ -219,6 +224,20 @@ func (r *ReadServerRequest) process(ctx context.Context) (Response, error) {
 		return nil, err
 	}
 	var res ReadServerResponse
+	err = parser.ToStruct(responseBody, apiFormat, &res)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse api response body to thola response")
+	}
+	return &res, nil
+}
+
+func (r *ReadSystemRequest) process(ctx context.Context) (Response, error) {
+	apiFormat := viper.GetString("target-api-format")
+	responseBody, err := sendToAPI(ctx, r, "read/system", apiFormat)
+	if err != nil {
+		return nil, err
+	}
+	var res ReadSystemResponse
 	err = parser.ToStruct(responseBody, apiFormat, &res)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse api response body to thola response")

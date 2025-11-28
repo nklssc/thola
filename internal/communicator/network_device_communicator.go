@@ -2,6 +2,7 @@ package communicator
 
 import (
 	"context"
+
 	"github.com/inexio/thola/internal/component"
 	"github.com/inexio/thola/internal/device"
 	"github.com/inexio/thola/internal/deviceclass/groupproperty"
@@ -287,6 +288,72 @@ func (c *networkDeviceCommunicator) GetServerComponent(ctx context.Context) (dev
 	}
 
 	return server, nil
+}
+
+func (c *networkDeviceCommunicator) GetSystemComponent(ctx context.Context) (device.SystemComponent, error) {
+	if !c.HasComponent(component.System) {
+		return device.SystemComponent{}, tholaerr.NewComponentNotFoundError("no system component available for this device")
+	}
+
+	var system device.SystemComponent
+
+	empty := true
+
+	name, err := c.GetSystemComponentName(ctx)
+	if err != nil {
+		if !tholaerr.IsNotFoundError(err) && !tholaerr.IsNotImplementedError(err) {
+			return device.SystemComponent{}, errors.Wrap(err, "error occurred during get system component name")
+		}
+	} else {
+		system.Name = &name
+		empty = false
+	}
+
+	description, err := c.GetSystemComponentDescription(ctx)
+	if err != nil {
+		if !tholaerr.IsNotFoundError(err) && !tholaerr.IsNotImplementedError(err) {
+			return device.SystemComponent{}, errors.Wrap(err, "error occurred during get system component description")
+		}
+	} else {
+		system.Description = &description
+		empty = false
+	}
+
+	contact, err := c.GetSystemComponentContact(ctx)
+	if err != nil {
+		if !tholaerr.IsNotFoundError(err) && !tholaerr.IsNotImplementedError(err) {
+			return device.SystemComponent{}, errors.Wrap(err, "error occurred during get system component contact")
+		}
+	} else {
+		system.Contact = &contact
+		empty = false
+	}
+
+	location, err := c.GetSystemComponentLocation(ctx)
+	if err != nil {
+		if !tholaerr.IsNotFoundError(err) && !tholaerr.IsNotImplementedError(err) {
+			return device.SystemComponent{}, errors.Wrap(err, "error occurred during get system component location")
+		}
+	} else {
+		system.Location = &location
+		empty = false
+	}
+
+	uptime, err := c.GetSystemComponentUptime(ctx)
+	if err != nil {
+		if !tholaerr.IsNotFoundError(err) && !tholaerr.IsNotImplementedError(err) {
+			return device.SystemComponent{}, errors.Wrap(err, "error occurred during get system component uptime")
+		}
+	} else {
+		system.Uptime = &uptime
+		empty = false
+	}
+
+	if empty {
+		return device.SystemComponent{}, tholaerr.NewNotFoundError("no system data available")
+	}
+
+	return system, nil
 }
 
 func (c *networkDeviceCommunicator) GetSBCComponent(ctx context.Context) (device.SBCComponent, error) {
@@ -1261,4 +1328,99 @@ func (c *networkDeviceCommunicator) GetHighAvailabilityComponentNodes(ctx contex
 	}
 
 	return c.deviceClassCommunicator.GetHighAvailabilityComponentNodes(ctx)
+}
+
+func (c *networkDeviceCommunicator) GetSystemComponentName(ctx context.Context) (string, error) {
+	if !c.HasComponent(component.System) {
+		return "", tholaerr.NewComponentNotFoundError("no system component available for this device")
+	}
+
+	if c.codeCommunicator != nil {
+		res, err := c.codeCommunicator.GetSystemComponentName(ctx)
+		if err != nil {
+			if !tholaerr.IsNotImplementedError(err) {
+				return "", errors.Wrap(err, "error in code communicator")
+			}
+		} else {
+			return res, nil
+		}
+	}
+
+	return c.deviceClassCommunicator.GetSystemComponentName(ctx)
+}
+
+func (c *networkDeviceCommunicator) GetSystemComponentDescription(ctx context.Context) (string, error) {
+	if !c.HasComponent(component.System) {
+		return "", tholaerr.NewComponentNotFoundError("no system component available for this device")
+	}
+
+	if c.codeCommunicator != nil {
+		res, err := c.codeCommunicator.GetSystemComponentDescription(ctx)
+		if err != nil {
+			if !tholaerr.IsNotImplementedError(err) {
+				return "", errors.Wrap(err, "error in code communicator")
+			}
+		} else {
+			return res, nil
+		}
+	}
+
+	return c.deviceClassCommunicator.GetSystemComponentDescription(ctx)
+}
+
+func (c *networkDeviceCommunicator) GetSystemComponentContact(ctx context.Context) (string, error) {
+	if !c.HasComponent(component.System) {
+		return "", tholaerr.NewComponentNotFoundError("no system component available for this device")
+	}
+
+	if c.codeCommunicator != nil {
+		res, err := c.codeCommunicator.GetSystemComponentContact(ctx)
+		if err != nil {
+			if !tholaerr.IsNotImplementedError(err) {
+				return "", errors.Wrap(err, "error in code communicator")
+			}
+		} else {
+			return res, nil
+		}
+	}
+
+	return c.deviceClassCommunicator.GetSystemComponentContact(ctx)
+}
+
+func (c *networkDeviceCommunicator) GetSystemComponentLocation(ctx context.Context) (string, error) {
+	if !c.HasComponent(component.System) {
+		return "", tholaerr.NewComponentNotFoundError("no system component available for this device")
+	}
+
+	if c.codeCommunicator != nil {
+		res, err := c.codeCommunicator.GetSystemComponentLocation(ctx)
+		if err != nil {
+			if !tholaerr.IsNotImplementedError(err) {
+				return "", errors.Wrap(err, "error in code communicator")
+			}
+		} else {
+			return res, nil
+		}
+	}
+
+	return c.deviceClassCommunicator.GetSystemComponentLocation(ctx)
+}
+
+func (c *networkDeviceCommunicator) GetSystemComponentUptime(ctx context.Context) (int, error) {
+	if !c.HasComponent(component.System) {
+		return 0, tholaerr.NewComponentNotFoundError("no system component available for this device")
+	}
+
+	if c.codeCommunicator != nil {
+		res, err := c.codeCommunicator.GetSystemComponentUptime(ctx)
+		if err != nil {
+			if !tholaerr.IsNotImplementedError(err) {
+				return 0, errors.Wrap(err, "error in code communicator")
+			}
+		} else {
+			return res, nil
+		}
+	}
+
+	return c.deviceClassCommunicator.GetSystemComponentUptime(ctx)
 }

@@ -34,6 +34,7 @@ Thola currently has three main modes of operation with various subcommands:
 - `identify` automatically identifies the device and outputs its vendor, model and other properties.
 - `read` reads out values and statistics of the device.
     - `read available-components` returns the available components for the device.
+    - `read system` reads out system information like name, description, contact, location and uptime.
     - `read count-interfaces` counts the interfaces.
     - `read cpu-load` returns the current cpu load of all CPUs.
     - `read disk` reads storage utilization.
@@ -54,6 +55,7 @@ Thola currently has three main modes of operation with various subcommands:
     - `check memory-usage` checks the current memory usage against given thresholds.
     - `check sbc` checks an SBC device and outputs metrics for each realm and agent as performance data.
     - `check server` checks server specific information.
+    - `check uptime` checks the uptime of a device.
     - `check snmp` checks SNMP reachability.
     - `check ups` checks if a UPS device has its main voltage applied and outputs additional performance data like battery capacity or current load, and compares them to optionally given thresholds.
     - `check thola-server` checks reachability of a Thola API.

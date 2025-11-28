@@ -5,6 +5,7 @@ package request
 
 import (
 	"context"
+
 	"github.com/inexio/go-monitoringplugin"
 )
 

@@ -4,6 +4,12 @@ package deviceclass
 
 import (
 	"context"
+	"io/fs"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/inexio/thola/config"
 	"github.com/inexio/thola/config/codecommunicator"
 	"github.com/inexio/thola/internal/communicator"
@@ -16,11 +22,6 @@ import (
 	"github.com/inexio/thola/internal/utility"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
-	"io/fs"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 // deviceClass represents a device class.
@@ -55,6 +56,7 @@ type deviceClassComponents struct {
 	memory           *deviceClassComponentsMemory
 	sbc              *deviceClassComponentsSBC
 	server           *deviceClassComponentsServer
+	system           *deviceClassComponentsSystem
 	disk             *deviceClassComponentsDisk
 	hardwareHealth   *deviceClassComponentsHardwareHealth
 	highAvailability *deviceClassComponentsHighAvailability
@@ -102,6 +104,15 @@ type deviceClassComponentsSBC struct {
 type deviceClassComponentsServer struct {
 	procs property.Reader
 	users property.Reader
+}
+
+// deviceClassComponentsSystem represents the system components part of a device class.
+type deviceClassComponentsSystem struct {
+	name        property.Reader
+	description property.Reader
+	contact     property.Reader
+	location    property.Reader
+	uptime      property.Reader
 }
 
 // deviceClassComponentsDisk represents the disk component part of a device class.
@@ -165,6 +176,7 @@ type yamlDeviceClassComponents struct {
 	Memory           *yamlComponentsMemoryProperties         `yaml:"memory"`
 	SBC              *yamlComponentsSBCProperties            `yaml:"sbc"`
 	Server           *yamlComponentsServerProperties         `yaml:"server"`
+	System           *yamlComponentsSystemProperties         `yaml:"system"`
 	Disk             *yamlComponentsDiskProperties           `yaml:"disk"`
 	HardwareHealth   *yamlComponentsHardwareHealthProperties `yaml:"hardware_health"`
 	HighAvailability *yamlComponentsHighAvailability         `yaml:"high_availability"`
@@ -231,6 +243,15 @@ type yamlComponentsSBCProperties struct {
 type yamlComponentsServerProperties struct {
 	Procs []interface{} `yaml:"procs"`
 	Users []interface{} `yaml:"users"`
+}
+
+// yamlComponentsSystemProperties represents the specific properties of system components of a yaml device class.
+type yamlComponentsSystemProperties struct {
+	Name        []interface{} `yaml:"name"`
+	Description []interface{} `yaml:"description"`
+	Contact     []interface{} `yaml:"contact"`
+	Location    []interface{} `yaml:"location"`
+	Uptime      []interface{} `yaml:"uptime"`
 }
 
 // yamlComponentsDiskProperties represents the specific properties of disk components of a yaml device class.
@@ -514,6 +535,14 @@ func (y *yamlDeviceClassComponents) convert(parentComponents deviceClassComponen
 		components.server = &server
 	}
 
+	if y.System != nil {
+		system, err := y.System.convert(parentComponents.system)
+		if err != nil {
+			return deviceClassComponents{}, errors.Wrap(err, "failed to read yaml system properties")
+		}
+		components.system = &system
+	}
+
 	if y.Disk != nil {
 		disk, err := y.Disk.convert(parentComponents.disk)
 		if err != nil {
@@ -774,9 +803,50 @@ func (y *yamlComponentsServerProperties) convert(parentComponent *deviceClassCom
 		}
 	}
 	if y.Users != nil {
-		prop.users, err = property.InterfaceSlice2Reader(y.Users, condition.PropertyDefault, prop.procs)
+		prop.users, err = property.InterfaceSlice2Reader(y.Users, condition.PropertyDefault, prop.users)
 		if err != nil {
 			return deviceClassComponentsServer{}, errors.Wrap(err, "failed to convert users property to property reader")
+		}
+	}
+	return prop, nil
+}
+
+func (y *yamlComponentsSystemProperties) convert(parentComponent *deviceClassComponentsSystem) (deviceClassComponentsSystem, error) {
+	var prop deviceClassComponentsSystem
+	var err error
+
+	if parentComponent != nil {
+		prop = *parentComponent
+	}
+
+	if y.Name != nil {
+		prop.name, err = property.InterfaceSlice2Reader(y.Name, condition.PropertyDefault, prop.name)
+		if err != nil {
+			return deviceClassComponentsSystem{}, errors.Wrap(err, "failed to convert name property to property reader")
+		}
+	}
+	if y.Description != nil {
+		prop.description, err = property.InterfaceSlice2Reader(y.Description, condition.PropertyDefault, prop.description)
+		if err != nil {
+			return deviceClassComponentsSystem{}, errors.Wrap(err, "failed to convert description property to property reader")
+		}
+	}
+	if y.Contact != nil {
+		prop.contact, err = property.InterfaceSlice2Reader(y.Contact, condition.PropertyDefault, prop.contact)
+		if err != nil {
+			return deviceClassComponentsSystem{}, errors.Wrap(err, "failed to convert contact property to property reader")
+		}
+	}
+	if y.Location != nil {
+		prop.location, err = property.InterfaceSlice2Reader(y.Location, condition.PropertyDefault, prop.location)
+		if err != nil {
+			return deviceClassComponentsSystem{}, errors.Wrap(err, "failed to convert location property to property reader")
+		}
+	}
+	if y.Uptime != nil {
+		prop.uptime, err = property.InterfaceSlice2Reader(y.Uptime, condition.PropertyDefault, prop.uptime)
+		if err != nil {
+			return deviceClassComponentsSystem{}, errors.Wrap(err, "failed to convert uptime property to property reader")
 		}
 	}
 	return prop, nil

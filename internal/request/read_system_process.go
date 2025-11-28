@@ -9,18 +9,18 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (r *ReadServerRequest) process(ctx context.Context) (Response, error) {
+func (r *ReadSystemRequest) process(ctx context.Context) (Response, error) {
 	com, err := GetCommunicator(ctx, r.BaseRequest)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get communicator")
 	}
 
-	result, err := com.GetServerComponent(ctx)
+	result, err := com.GetSystemComponent(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "can't get server components")
+		return nil, errors.Wrap(err, "can't get system components")
 	}
 
-	return &ReadServerResponse{
-		Server: result,
+	return &ReadSystemResponse{
+		System: result,
 	}, nil
 }

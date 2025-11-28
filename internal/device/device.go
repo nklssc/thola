@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/inexio/go-monitoringplugin"
 )
 
@@ -310,7 +311,7 @@ type CPU struct {
 
 // MemoryComponent
 //
-// MemoryComponent represents a Memory component
+// MemoryComponent represents a Memory component.
 //
 // swagger:model
 type MemoryComponent struct {
@@ -376,6 +377,19 @@ type UPSComponent struct {
 type ServerComponent struct {
 	Procs *int `yaml:"procs" json:"procs" xml:"procs" mapstructure:"procs"`
 	Users *int `yaml:"users" json:"users" xml:"users" mapstructure:"users"`
+}
+
+// SystemComponent
+//
+// SystemComponent represents system information of a device.
+//
+// swagger:model
+type SystemComponent struct {
+	Name        *string `yaml:"name" json:"name" xml:"name" mapstructure:"name"`
+	Description *string `yaml:"description" json:"description" xml:"description" mapstructure:"description"`
+	Contact     *string `yaml:"contact" json:"contact" xml:"contact" mapstructure:"contact"`
+	Location    *string `yaml:"location" json:"location" xml:"location" mapstructure:"location"`
+	Uptime      *int    `yaml:"uptime" json:"uptime" xml:"uptime" mapstructure:"uptime"`
 }
 
 // SBCComponent

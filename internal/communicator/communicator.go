@@ -2,6 +2,7 @@ package communicator
 
 import (
 	"context"
+
 	"github.com/inexio/thola/internal/component"
 	"github.com/inexio/thola/internal/device"
 	"github.com/inexio/thola/internal/deviceclass/groupproperty"
@@ -36,6 +37,9 @@ type Communicator interface {
 
 	// GetServerComponent returns the sbc component of a device if available.
 	GetServerComponent(ctx context.Context) (device.ServerComponent, error)
+
+	// GetSystemComponent returns the system component of a device if available.
+	GetSystemComponent(ctx context.Context) (device.SystemComponent, error)
 
 	// GetDiskComponent returns the disk component of a device if available.
 	GetDiskComponent(ctx context.Context) (device.DiskComponent, error)
@@ -78,6 +82,7 @@ type Functions interface {
 	availableUPSCommunicatorFunctions
 	availableSBCCommunicatorFunctions
 	availableServerCommunicatorFunctions
+	availableSystemCommunicatorFunctions
 	availableDiskCommunicatorFunctions
 	availableHardwareHealthCommunicatorFunctions
 	availableHighAvailabilityCommunicatorFunctions
@@ -144,6 +149,24 @@ type availableServerCommunicatorFunctions interface {
 
 	// GetServerComponentUsers returns the user count of the device.
 	GetServerComponentUsers(ctx context.Context) (int, error)
+}
+
+type availableSystemCommunicatorFunctions interface {
+
+	// GetSystemComponentName returns the system name of the device.
+	GetSystemComponentName(ctx context.Context) (string, error)
+
+	// GetSystemComponentDescription returns the system description of the device.
+	GetSystemComponentDescription(ctx context.Context) (string, error)
+
+	// GetSystemComponentContact returns the system contact of the device.
+	GetSystemComponentContact(ctx context.Context) (string, error)
+
+	// GetSystemComponentLocation returns the system location of the device.
+	GetSystemComponentLocation(ctx context.Context) (string, error)
+
+	// GetSystemComponentUptime returns the uptime of the device.
+	GetSystemComponentUptime(ctx context.Context) (int, error)
 }
 
 type availableSBCCommunicatorFunctions interface {

@@ -3,6 +3,9 @@ package deviceclass
 import (
 	"context"
 	"fmt"
+	"math"
+	"strings"
+
 	"github.com/inexio/thola/internal/component"
 	"github.com/inexio/thola/internal/device"
 	"github.com/inexio/thola/internal/deviceclass/groupproperty"
@@ -11,8 +14,6 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	"math"
-	"strings"
 )
 
 type deviceClassCommunicator struct {
@@ -312,6 +313,72 @@ func (o *deviceClassCommunicator) GetServerComponent(ctx context.Context) (devic
 	}
 
 	return server, nil
+}
+
+func (o *deviceClassCommunicator) GetSystemComponent(ctx context.Context) (device.SystemComponent, error) {
+	if !o.HasComponent(component.System) {
+		return device.SystemComponent{}, tholaerr.NewComponentNotFoundError("no system component available for this device")
+	}
+
+	var system device.SystemComponent
+
+	empty := true
+
+	name, err := o.GetSystemComponentName(ctx)
+	if err != nil {
+		if !tholaerr.IsNotFoundError(err) && !tholaerr.IsNotImplementedError(err) {
+			return device.SystemComponent{}, errors.Wrap(err, "error occurred during get system component name")
+		}
+	} else {
+		system.Name = &name
+		empty = false
+	}
+
+	description, err := o.GetSystemComponentDescription(ctx)
+	if err != nil {
+		if !tholaerr.IsNotFoundError(err) && !tholaerr.IsNotImplementedError(err) {
+			return device.SystemComponent{}, errors.Wrap(err, "error occurred during get system component description")
+		}
+	} else {
+		system.Description = &description
+		empty = false
+	}
+
+	contact, err := o.GetSystemComponentContact(ctx)
+	if err != nil {
+		if !tholaerr.IsNotFoundError(err) && !tholaerr.IsNotImplementedError(err) {
+			return device.SystemComponent{}, errors.Wrap(err, "error occurred during get system component contact")
+		}
+	} else {
+		system.Contact = &contact
+		empty = false
+	}
+
+	location, err := o.GetSystemComponentLocation(ctx)
+	if err != nil {
+		if !tholaerr.IsNotFoundError(err) && !tholaerr.IsNotImplementedError(err) {
+			return device.SystemComponent{}, errors.Wrap(err, "error occurred during get system component location")
+		}
+	} else {
+		system.Location = &location
+		empty = false
+	}
+
+	uptime, err := o.GetSystemComponentUptime(ctx)
+	if err != nil {
+		if !tholaerr.IsNotFoundError(err) && !tholaerr.IsNotImplementedError(err) {
+			return device.SystemComponent{}, errors.Wrap(err, "error occurred during get system component uptime")
+		}
+	} else {
+		system.Uptime = &uptime
+		empty = false
+	}
+
+	if empty {
+		return device.SystemComponent{}, tholaerr.NewNotFoundError("no system data available")
+	}
+
+	return system, nil
 }
 
 func (o *deviceClassCommunicator) GetSBCComponent(ctx context.Context) (device.SBCComponent, error) {
@@ -1127,6 +1194,85 @@ func (o *deviceClassCommunicator) GetServerComponentUsers(ctx context.Context) (
 	if err != nil {
 		log.Ctx(ctx).Debug().Err(err).Msg("failed to get property")
 		return 0, errors.Wrap(err, "failed to get ServerComponentUsers")
+	}
+	r, err := res.Int()
+	if err != nil {
+		return 0, errors.Wrapf(err, "failed to convert value '%s' to int", res.String())
+	}
+	return r, nil
+}
+
+func (o *deviceClassCommunicator) GetSystemComponentName(ctx context.Context) (string, error) {
+	if o.components.system == nil || o.components.system.name == nil {
+		log.Ctx(ctx).Debug().Str("property", "SystemComponentName").Str("device_class", o.name).Msg("no detection information available")
+		return "", tholaerr.NewNotImplementedError("no detection information available")
+	}
+	logger := log.Ctx(ctx).With().Str("property", "SystemComponentName").Logger()
+	ctx = logger.WithContext(ctx)
+	res, err := o.components.system.name.GetProperty(ctx)
+	if err != nil {
+		log.Ctx(ctx).Debug().Err(err).Msg("failed to get property")
+		return "", errors.Wrap(err, "failed to get SystemComponentName")
+	}
+	return strings.TrimSpace(res.String()), nil
+}
+
+func (o *deviceClassCommunicator) GetSystemComponentDescription(ctx context.Context) (string, error) {
+	if o.components.system == nil || o.components.system.description == nil {
+		log.Ctx(ctx).Debug().Str("property", "SystemComponentDescription").Str("device_class", o.name).Msg("no detection information available")
+		return "", tholaerr.NewNotImplementedError("no detection information available")
+	}
+	logger := log.Ctx(ctx).With().Str("property", "SystemComponentDescription").Logger()
+	ctx = logger.WithContext(ctx)
+	res, err := o.components.system.description.GetProperty(ctx)
+	if err != nil {
+		log.Ctx(ctx).Debug().Err(err).Msg("failed to get property")
+		return "", errors.Wrap(err, "failed to get SystemComponentDescription")
+	}
+	return strings.TrimSpace(res.String()), nil
+}
+
+func (o *deviceClassCommunicator) GetSystemComponentContact(ctx context.Context) (string, error) {
+	if o.components.system == nil || o.components.system.contact == nil {
+		log.Ctx(ctx).Debug().Str("property", "SystemComponentContact").Str("device_class", o.name).Msg("no detection information available")
+		return "", tholaerr.NewNotImplementedError("no detection information available")
+	}
+	logger := log.Ctx(ctx).With().Str("property", "SystemComponentContact").Logger()
+	ctx = logger.WithContext(ctx)
+	res, err := o.components.system.contact.GetProperty(ctx)
+	if err != nil {
+		log.Ctx(ctx).Debug().Err(err).Msg("failed to get property")
+		return "", errors.Wrap(err, "failed to get SystemComponentContact")
+	}
+	return strings.TrimSpace(res.String()), nil
+}
+
+func (o *deviceClassCommunicator) GetSystemComponentLocation(ctx context.Context) (string, error) {
+	if o.components.system == nil || o.components.system.location == nil {
+		log.Ctx(ctx).Debug().Str("property", "SystemComponentLocation").Str("device_class", o.name).Msg("no detection information available")
+		return "", tholaerr.NewNotImplementedError("no detection information available")
+	}
+	logger := log.Ctx(ctx).With().Str("property", "SystemComponentLocation").Logger()
+	ctx = logger.WithContext(ctx)
+	res, err := o.components.system.location.GetProperty(ctx)
+	if err != nil {
+		log.Ctx(ctx).Debug().Err(err).Msg("failed to get property")
+		return "", errors.Wrap(err, "failed to get SystemComponentLocation")
+	}
+	return strings.TrimSpace(res.String()), nil
+}
+
+func (o *deviceClassCommunicator) GetSystemComponentUptime(ctx context.Context) (int, error) {
+	if o.components.system == nil || o.components.system.uptime == nil {
+		log.Ctx(ctx).Debug().Str("property", "SystemComponentUptime").Str("device_class", o.name).Msg("no detection information available")
+		return 0, tholaerr.NewNotImplementedError("no detection information available")
+	}
+	logger := log.Ctx(ctx).With().Str("property", "SystemComponentUptime").Logger()
+	ctx = logger.WithContext(ctx)
+	res, err := o.components.system.uptime.GetProperty(ctx)
+	if err != nil {
+		log.Ctx(ctx).Debug().Err(err).Msg("failed to get property")
+		return 0, errors.Wrap(err, "failed to get SystemComponentUptime")
 	}
 	r, err := res.Int()
 	if err != nil {

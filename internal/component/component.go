@@ -2,6 +2,7 @@ package component
 
 import (
 	"fmt"
+
 	"github.com/pkg/errors"
 )
 
@@ -16,6 +17,7 @@ const (
 	Memory
 	SBC
 	Server
+	System
 	Disk
 	HardwareHealth
 	HighAvailability
@@ -36,6 +38,8 @@ func CreateComponent(component string) (Component, error) {
 		return SBC, nil
 	case "server":
 		return Server, nil
+	case "system":
+		return System, nil
 	case "disk":
 		return Disk, nil
 	case "hardware_health":
@@ -65,6 +69,8 @@ func (d *Component) ToString() (string, error) {
 		return "sbc", nil
 	case Server:
 		return "server", nil
+	case System:
+		return "system", nil
 	case Disk:
 		return "disk", nil
 	case HardwareHealth:

@@ -4,6 +4,12 @@ import (
 	"context"
 	"crypto/subtle"
 	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"sync"
+	"time"
+
 	"github.com/inexio/thola/api/statistics"
 	"github.com/inexio/thola/internal/database"
 	"github.com/inexio/thola/internal/request"
@@ -13,11 +19,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
-	"net/http"
-	"os"
-	"os/signal"
-	"sync"
-	"time"
 )
 
 var deviceChannels struct {
@@ -340,6 +341,33 @@ func StartAPI() {
 	//       $ref: '#/definitions/OutputError'
 	e.POST("/check/server", checkServer)
 
+	// swagger:operation POST /check/uptime check checkUptime
+	// ---
+	// summary: Check the uptime of a device.
+	// consumes:
+	// - application/json
+	// - application/xml
+	// produces:
+	// - application/json
+	// - application/xml
+	// parameters:
+	// - name: body
+	//   in: body
+	//   description: Request to process.
+	//   required: true
+	//   schema:
+	//     $ref: '#/definitions/CheckUptimeRequest'
+	// responses:
+	//   200:
+	//     description: Returns the response.
+	//     schema:
+	//       $ref: '#/definitions/CheckResponse'
+	//   400:
+	//     description: Returns an error with more details in the body.
+	//     schema:
+	//       $ref: '#/definitions/OutputError'
+	e.POST("/check/uptime", checkUptime)
+
 	// swagger:operation POST /check/disk check checkDisk
 	// ---
 	// summary: Check the disk of a device.
@@ -610,6 +638,33 @@ func StartAPI() {
 	//       $ref: '#/definitions/OutputError'
 	e.POST("/read/server", readServer)
 
+	// swagger:operation POST /read/system read readSystem
+	// ---
+	// summary: Reads out system data of a device.
+	// consumes:
+	// - application/json
+	// - application/xml
+	// produces:
+	// - application/json
+	// - application/xml
+	// parameters:
+	// - name: body
+	//   in: body
+	//   description: Request to process.
+	//   required: true
+	//   schema:
+	//     $ref: '#/definitions/ReadSystemRequest'
+	// responses:
+	//   200:
+	//     description: Returns the response.
+	//     schema:
+	//       $ref: '#/definitions/ReadSystemResponse'
+	//   400:
+	//     description: Returns an error with more details in the body.
+	//     schema:
+	//       $ref: '#/definitions/OutputError'
+	e.POST("/read/system", readSystem)
+
 	// swagger:operation POST /read/disk read readDisk
 	// ---
 	// summary: Reads out disk data of a device.
@@ -874,6 +929,18 @@ func checkServer(ctx echo.Context) error {
 	return returnInFormat(ctx, http.StatusOK, resp)
 }
 
+func checkUptime(ctx echo.Context) error {
+	r := request.CheckUptimeRequest{}
+	if err := ctx.Bind(&r); err != nil {
+		return err
+	}
+	resp, err := handleAPIRequest(ctx, &r, &r.BaseRequest.DeviceData.IPAddress)
+	if err != nil {
+		return handleError(ctx, err)
+	}
+	return returnInFormat(ctx, http.StatusOK, resp)
+}
+
 func checkDisk(ctx echo.Context) error {
 	r := request.CheckDiskRequest{}
 	if err := ctx.Bind(&r); err != nil {
@@ -984,6 +1051,18 @@ func readSBC(ctx echo.Context) error {
 
 func readServer(ctx echo.Context) error {
 	r := request.ReadServerRequest{}
+	if err := ctx.Bind(&r); err != nil {
+		return err
+	}
+	resp, err := handleAPIRequest(ctx, &r, &r.BaseRequest.DeviceData.IPAddress)
+	if err != nil {
+		return handleError(ctx, err)
+	}
+	return returnInFormat(ctx, http.StatusOK, resp)
+}
+
+func readSystem(ctx echo.Context) error {
+	r := request.ReadSystemRequest{}
 	if err := ctx.Bind(&r); err != nil {
 		return err
 	}

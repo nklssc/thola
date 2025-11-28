@@ -3,6 +3,7 @@ package codecommunicator
 import (
 	"context"
 	"fmt"
+
 	"github.com/inexio/thola/internal/communicator"
 	"github.com/inexio/thola/internal/device"
 	"github.com/inexio/thola/internal/deviceclass/groupproperty"
@@ -103,6 +104,26 @@ func (c *codeCommunicator) GetServerComponentProcs(_ context.Context) (int, erro
 }
 
 func (c *codeCommunicator) GetServerComponentUsers(_ context.Context) (int, error) {
+	return 0, tholaerr.NewNotImplementedError("function is not implemented for this communicator")
+}
+
+func (c *codeCommunicator) GetSystemComponentName(_ context.Context) (string, error) {
+	return "", tholaerr.NewNotImplementedError("function is not implemented for this communicator")
+}
+
+func (c *codeCommunicator) GetSystemComponentDescription(_ context.Context) (string, error) {
+	return "", tholaerr.NewNotImplementedError("function is not implemented for this communicator")
+}
+
+func (c *codeCommunicator) GetSystemComponentContact(_ context.Context) (string, error) {
+	return "", tholaerr.NewNotImplementedError("function is not implemented for this communicator")
+}
+
+func (c *codeCommunicator) GetSystemComponentLocation(_ context.Context) (string, error) {
+	return "", tholaerr.NewNotImplementedError("function is not implemented for this communicator")
+}
+
+func (c *codeCommunicator) GetSystemComponentUptime(_ context.Context) (int, error) {
 	return 0, tholaerr.NewNotImplementedError("function is not implemented for this communicator")
 }
 
