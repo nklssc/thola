@@ -2,13 +2,14 @@ package groupproperty
 
 import (
 	"context"
+	"testing"
+
 	"github.com/gosnmp/gosnmp"
 	"github.com/inexio/thola/internal/network"
 	"github.com/inexio/thola/internal/utility"
 	"github.com/inexio/thola/internal/value"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestGroupProperty_merge(t *testing.T) {
@@ -534,7 +535,7 @@ func TestSNMPReader_getProperty_getsInsteadOfWalk(t *testing.T) {
 
 	oidReader.
 		On("readOID", ctx, mock.MatchedBy(func(input []string) bool {
-			return utility.SameStringSlice(input, []string{
+			return utility.SameSlice(input, []string{
 				"1",
 				"2",
 				"3",

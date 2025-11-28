@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+
 	"github.com/inexio/thola/internal/network"
 	"github.com/inexio/thola/internal/parser"
 	"github.com/inexio/thola/internal/request"
@@ -30,33 +31,33 @@ func getBaseRequest(host string) request.BaseRequest {
 	v3PrivKey := viper.GetString("device.snmp-v3-priv-key")
 	v3PrivProto := viper.GetString("device.snmp-v3-priv-proto")
 	return request.BaseRequest{
-		Timeout: utility.IfThenElse(deviceFlagSet.Changed("timeout"), &timeout, nullInt).(*int),
+		Timeout: utility.IfThenElse(deviceFlagSet.Changed("timeout"), &timeout, nullInt),
 		DeviceData: request.DeviceData{
 			IPAddress: host,
 			ConnectionData: network.ConnectionData{
 				SNMP: &network.SNMPConnectionData{
-					Communities:              utility.IfThenElse(deviceFlagSet.Changed("snmp-community"), viper.GetStringSlice("device.snmp-communities"), []string{}).([]string),
-					Versions:                 utility.IfThenElse(deviceFlagSet.Changed("snmp-version"), viper.GetStringSlice("device.snmp-versions"), []string{}).([]string),
-					Ports:                    utility.IfThenElse(deviceFlagSet.Changed("snmp-port"), viper.GetIntSlice("device.snmp-ports"), []int{}).([]int),
-					MaxRepetitions:           utility.IfThenElse(deviceFlagSet.Changed("snmp-max-repetitions"), &maxRepetitions, nullUInt32).(*uint32),
-					DiscoverParallelRequests: utility.IfThenElse(deviceFlagSet.Changed("snmp-discover-par-requests"), &parallelRequests, nullInt).(*int),
-					DiscoverTimeout:          utility.IfThenElse(deviceFlagSet.Changed("snmp-discover-timeout"), &discoverTimeout, nullInt).(*int),
-					DiscoverRetries:          utility.IfThenElse(deviceFlagSet.Changed("snmp-discover-retries"), &retries, nullInt).(*int),
+					Communities:              utility.IfThenElse(deviceFlagSet.Changed("snmp-community"), viper.GetStringSlice("device.snmp-communities"), []string{}),
+					Versions:                 utility.IfThenElse(deviceFlagSet.Changed("snmp-version"), viper.GetStringSlice("device.snmp-versions"), []string{}),
+					Ports:                    utility.IfThenElse(deviceFlagSet.Changed("snmp-port"), viper.GetIntSlice("device.snmp-ports"), []int{}),
+					MaxRepetitions:           utility.IfThenElse(deviceFlagSet.Changed("snmp-max-repetitions"), &maxRepetitions, nullUInt32),
+					DiscoverParallelRequests: utility.IfThenElse(deviceFlagSet.Changed("snmp-discover-par-requests"), &parallelRequests, nullInt),
+					DiscoverTimeout:          utility.IfThenElse(deviceFlagSet.Changed("snmp-discover-timeout"), &discoverTimeout, nullInt),
+					DiscoverRetries:          utility.IfThenElse(deviceFlagSet.Changed("snmp-discover-retries"), &retries, nullInt),
 					V3Data: network.SNMPv3ConnectionData{
-						Level:        utility.IfThenElse(deviceFlagSet.Changed("snmp-v3-level"), &v3Level, nullString).(*string),
-						ContextName:  utility.IfThenElse(deviceFlagSet.Changed("snmp-v3-context"), &v3ContextName, nullString).(*string),
-						User:         utility.IfThenElse(deviceFlagSet.Changed("snmp-v3-user"), &v3User, nullString).(*string),
-						AuthKey:      utility.IfThenElse(deviceFlagSet.Changed("snmp-v3-auth-key"), &v3AuthKey, nullString).(*string),
-						AuthProtocol: utility.IfThenElse(deviceFlagSet.Changed("snmp-v3-auth-proto"), &v3AuthProto, nullString).(*string),
-						PrivKey:      utility.IfThenElse(deviceFlagSet.Changed("snmp-v3-priv-key"), &v3PrivKey, nullString).(*string),
-						PrivProtocol: utility.IfThenElse(deviceFlagSet.Changed("snmp-v3-priv-proto"), &v3PrivProto, nullString).(*string),
+						Level:        utility.IfThenElse(deviceFlagSet.Changed("snmp-v3-level"), &v3Level, nullString),
+						ContextName:  utility.IfThenElse(deviceFlagSet.Changed("snmp-v3-context"), &v3ContextName, nullString),
+						User:         utility.IfThenElse(deviceFlagSet.Changed("snmp-v3-user"), &v3User, nullString),
+						AuthKey:      utility.IfThenElse(deviceFlagSet.Changed("snmp-v3-auth-key"), &v3AuthKey, nullString),
+						AuthProtocol: utility.IfThenElse(deviceFlagSet.Changed("snmp-v3-auth-proto"), &v3AuthProto, nullString),
+						PrivKey:      utility.IfThenElse(deviceFlagSet.Changed("snmp-v3-priv-key"), &v3PrivKey, nullString),
+						PrivProtocol: utility.IfThenElse(deviceFlagSet.Changed("snmp-v3-priv-proto"), &v3PrivProto, nullString),
 					},
 				},
 				HTTP: &network.HTTPConnectionData{
-					HTTPPorts:    utility.IfThenElse(deviceFlagSet.Changed("http-port"), viper.GetIntSlice("device.http-ports"), []int{}).([]int),
-					HTTPSPorts:   utility.IfThenElse(deviceFlagSet.Changed("https-port"), viper.GetIntSlice("device.https-ports"), []int{}).([]int),
-					AuthUsername: utility.IfThenElse(deviceFlagSet.Changed("http-username"), &authUsername, nullString).(*string),
-					AuthPassword: utility.IfThenElse(deviceFlagSet.Changed("http-password"), &authPassword, nullString).(*string),
+					HTTPPorts:    utility.IfThenElse(deviceFlagSet.Changed("http-port"), viper.GetIntSlice("device.http-ports"), []int{}),
+					HTTPSPorts:   utility.IfThenElse(deviceFlagSet.Changed("https-port"), viper.GetIntSlice("device.https-ports"), []int{}),
+					AuthUsername: utility.IfThenElse(deviceFlagSet.Changed("http-username"), &authUsername, nullString),
+					AuthPassword: utility.IfThenElse(deviceFlagSet.Changed("http-password"), &authPassword, nullString),
 				},
 			},
 		},

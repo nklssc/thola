@@ -5,12 +5,13 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"reflect"
+	"strings"
+
 	"github.com/gocarina/gocsv"
 	"github.com/inexio/thola/internal/tholaerr"
 	"github.com/inexio/thola/internal/utility"
 	"github.com/pkg/errors"
-	"reflect"
-	"strings"
 )
 
 type jsonParser interface {
@@ -88,14 +89,14 @@ func ToCSV(i interface{}) ([]byte, error) {
 	return response, nil
 }
 
-//ToHumanReadable parses the object to a human readable format.
+// ToHumanReadable parses the object to a human readable format.
 func ToHumanReadable(i interface{}) ([]byte, error) {
 	i = checkIfError(i)
 	if p, ok := i.(humanReadableParser); ok {
 		return p.ToHumanReadable()
 	}
 	res := strings.TrimSpace(toHumanReadable(reflect.ValueOf(i), 0))
-	return []byte(utility.IfThenElseString(res == "", "No result", res)), nil
+	return []byte(utility.IfThenElse(res == "", "No result", res)), nil
 }
 
 // ToCheckPluginOutput parses the object to a check plugin format.

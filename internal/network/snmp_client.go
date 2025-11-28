@@ -5,6 +5,12 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+	"unicode"
+
 	"github.com/gosnmp/gosnmp"
 	"github.com/inexio/thola/internal/tholaerr"
 	"github.com/inexio/thola/internal/utility"
@@ -12,11 +18,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/text/encoding/charmap"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
-	"unicode"
 )
 
 //go:generate go run github.com/vektra/mockery/v2 --name=SNMPClient --inpackage
@@ -228,7 +229,7 @@ func NewSNMPClient(ctx context.Context, ipAddress, snmpVersion, community string
 		Community: community,
 		Version:   version,
 		Timeout:   time.Duration(timeout) * time.Second,
-		MaxOids:   utility.IfThenElseInt(version == gosnmp.Version1, 1, gosnmp.MaxOids),
+		MaxOids:   utility.IfThenElse(version == gosnmp.Version1, 1, gosnmp.MaxOids),
 		Retries:   retries,
 	}
 

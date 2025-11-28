@@ -6,6 +6,7 @@ package request
 import (
 	"context"
 	"fmt"
+
 	"github.com/inexio/go-monitoringplugin"
 	"github.com/inexio/thola/internal/network"
 	"github.com/inexio/thola/internal/utility"
@@ -22,8 +23,8 @@ func (r *CheckSNMPRequest) process(ctx context.Context) (Response, error) {
 			res.SuccessfulSnmpCredentials = &network.SNMPCredentials{
 				Version:       version,
 				Port:          con.SnmpClient.GetPort(),
-				V3Level:       utility.IfThenElse(con.SnmpClient.GetV3Level() == nil, "", *con.SnmpClient.GetV3Level()).(string),
-				V3ContextName: utility.IfThenElse(con.SnmpClient.GetV3ContextName() == nil, "", *con.SnmpClient.GetV3ContextName()).(string),
+				V3Level:       utility.IfThenElse(con.SnmpClient.GetV3Level() == nil, "", *con.SnmpClient.GetV3Level()),
+				V3ContextName: utility.IfThenElse(con.SnmpClient.GetV3ContextName() == nil, "", *con.SnmpClient.GetV3ContextName()),
 			}
 			r.mon.UpdateStatus(monitoringplugin.OK, fmt.Sprintf("version: '%s'; port: '%d'; level: '%s'; context_name: '%s'", res.SuccessfulSnmpCredentials.Version, res.SuccessfulSnmpCredentials.Port, res.SuccessfulSnmpCredentials.V3Level, res.SuccessfulSnmpCredentials.V3ContextName))
 		} else {

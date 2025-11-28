@@ -3,6 +3,9 @@ package condition
 import (
 	"context"
 	"fmt"
+	"regexp"
+	"strings"
+
 	"github.com/inexio/thola/internal/device"
 	"github.com/inexio/thola/internal/network"
 	"github.com/inexio/thola/internal/tholaerr"
@@ -10,8 +13,6 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	"regexp"
-	"strings"
 )
 
 func Interface2Condition(i interface{}, task RelatedTask) (Condition, error) {
@@ -285,7 +286,7 @@ func (s *httpCondition) Check(ctx context.Context) (bool, error) {
 	if s.Type == "HttpGetBody" {
 		for _, useHTTPS := range []bool{true, false} {
 			con.HTTP.HTTPClient.UseHTTPS(useHTTPS)
-			for _, port := range utility.IfThenElse(useHTTPS, con.HTTP.ConnectionData.HTTPSPorts, con.HTTP.ConnectionData.HTTPPorts).([]int) {
+			for _, port := range utility.IfThenElse(useHTTPS, con.HTTP.ConnectionData.HTTPSPorts, con.HTTP.ConnectionData.HTTPPorts) {
 				con.HTTP.HTTPClient.SetPort(port)
 				r, err := con.HTTP.HTTPClient.Request(ctx, "GET", s.URI, "", nil, nil)
 				if err != nil {

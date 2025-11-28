@@ -651,7 +651,7 @@ func (y *yamlDeviceClassConfig) convert(parentConfig deviceClassConfig) (deviceC
 	} else {
 		cfg.snmp.MaxRepetitions = parentConfig.snmp.MaxRepetitions
 	}
-	cfg.snmp.MaxOids = utility.IfThenElseInt(y.SNMP.MaxOids != 0, y.SNMP.MaxOids, parentConfig.snmp.MaxOids)
+	cfg.snmp.MaxOids = utility.IfThenElse(y.SNMP.MaxOids != 0, y.SNMP.MaxOids, parentConfig.snmp.MaxOids)
 
 	components := make(map[component.Component]bool)
 	for k, v := range parentConfig.components {

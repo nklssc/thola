@@ -24,7 +24,7 @@ var checkHighAvailabilityCMD = &cobra.Command{
 		role := cmd.Flags().Lookup("role").Value.String()
 		r := request.CheckHighAvailabilityRequest{
 			CheckDeviceRequest: getCheckDeviceRequest(args[0]),
-			Role:               utility.IfThenElse(cmd.Flags().Changed("role"), &role, nilString).(*string),
+			Role:               utility.IfThenElse(cmd.Flags().Changed("role"), &role, nilString),
 			NodesThresholds:    generateCheckThresholds(cmd, "nodes-warning", "", "nodes-critical", "", true),
 		}
 		handleRequest(&r)

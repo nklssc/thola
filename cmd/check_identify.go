@@ -1,12 +1,13 @@
 package cmd
 
 import (
+	"log"
+
 	"github.com/inexio/thola/internal/device"
 	"github.com/inexio/thola/internal/request"
 	"github.com/inexio/thola/internal/utility"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"log"
 )
 
 func init() {
@@ -76,11 +77,11 @@ var checkIdentifyCMD = &cobra.Command{
 			Expectations: device.Device{
 				Class: cmd.Flags().Lookup("os").Value.String(),
 				Properties: device.Properties{
-					Vendor:       utility.IfThenElse(cmd.Flags().Changed("vendor"), &vendor, nilString).(*string),
-					Model:        utility.IfThenElse(cmd.Flags().Changed("model"), &model, nilString).(*string),
-					ModelSeries:  utility.IfThenElse(cmd.Flags().Changed("model-series"), &modelSeries, nilString).(*string),
-					SerialNumber: utility.IfThenElse(cmd.Flags().Changed("serial-number"), &serialNumber, nilString).(*string),
-					OSVersion:    utility.IfThenElse(cmd.Flags().Changed("os-version"), &osVersion, nilString).(*string),
+					Vendor:       utility.IfThenElse(cmd.Flags().Changed("vendor"), &vendor, nilString),
+					Model:        utility.IfThenElse(cmd.Flags().Changed("model"), &model, nilString),
+					ModelSeries:  utility.IfThenElse(cmd.Flags().Changed("model-series"), &modelSeries, nilString),
+					SerialNumber: utility.IfThenElse(cmd.Flags().Changed("serial-number"), &serialNumber, nilString),
+					OSVersion:    utility.IfThenElse(cmd.Flags().Changed("os-version"), &osVersion, nilString),
 				},
 			},
 			OsDiffWarning:           viper.GetBool("checkIdentify.os-diff-warning"),

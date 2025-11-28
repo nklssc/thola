@@ -2,6 +2,10 @@ package request
 
 import (
 	"context"
+	"net"
+	"strconv"
+	"time"
+
 	"github.com/inexio/thola/internal/database"
 	"github.com/inexio/thola/internal/network"
 	"github.com/inexio/thola/internal/tholaerr"
@@ -9,9 +13,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
-	"net"
-	"strconv"
-	"time"
 )
 
 // BaseRequest is a generic request that is processed by thola
@@ -25,7 +26,7 @@ type BaseRequest struct {
 
 // DeviceData
 //
-// DeviceData includes all data that can be used to contact a device
+// # DeviceData includes all data that can be used to contact a device
 //
 // swagger:model
 type DeviceData struct {
@@ -91,27 +92,27 @@ func (r *BaseRequest) validate(ctx context.Context) error {
 
 	mergedData := network.ConnectionData{
 		SNMP: &network.SNMPConnectionData{
-			Communities:              utility.SliceUniqueString(append(cacheData.SNMP.Communities, configData.SNMP.Communities...)),
-			Versions:                 utility.SliceUniqueString(append(cacheData.SNMP.Versions, configData.SNMP.Versions...)),
-			Ports:                    utility.SliceUniqueInt(append(cacheData.SNMP.Ports, configData.SNMP.Ports...)),
+			Communities:              utility.SliceUnique(append(cacheData.SNMP.Communities, configData.SNMP.Communities...)),
+			Versions:                 utility.SliceUnique(append(cacheData.SNMP.Versions, configData.SNMP.Versions...)),
+			Ports:                    utility.SliceUnique(append(cacheData.SNMP.Ports, configData.SNMP.Ports...)),
 			DiscoverParallelRequests: configData.SNMP.DiscoverParallelRequests,
 			DiscoverTimeout:          configData.SNMP.DiscoverTimeout,
 			DiscoverRetries:          configData.SNMP.DiscoverRetries,
 			V3Data: network.SNMPv3ConnectionData{
-				Level:        utility.IfThenElse(cacheData.SNMP.V3Data.Level != nil, cacheData.SNMP.V3Data.Level, configData.SNMP.V3Data.Level).(*string),
-				ContextName:  utility.IfThenElse(cacheData.SNMP.V3Data.ContextName != nil, cacheData.SNMP.V3Data.ContextName, configData.SNMP.V3Data.ContextName).(*string),
-				User:         utility.IfThenElse(cacheData.SNMP.V3Data.User != nil, cacheData.SNMP.V3Data.User, configData.SNMP.V3Data.User).(*string),
-				AuthKey:      utility.IfThenElse(cacheData.SNMP.V3Data.AuthKey != nil, cacheData.SNMP.V3Data.AuthKey, configData.SNMP.V3Data.AuthKey).(*string),
-				AuthProtocol: utility.IfThenElse(cacheData.SNMP.V3Data.AuthProtocol != nil, cacheData.SNMP.V3Data.AuthProtocol, configData.SNMP.V3Data.AuthProtocol).(*string),
-				PrivKey:      utility.IfThenElse(cacheData.SNMP.V3Data.PrivKey != nil, cacheData.SNMP.V3Data.PrivKey, configData.SNMP.V3Data.PrivKey).(*string),
-				PrivProtocol: utility.IfThenElse(cacheData.SNMP.V3Data.PrivProtocol != nil, cacheData.SNMP.V3Data.PrivProtocol, configData.SNMP.V3Data.PrivProtocol).(*string),
+				Level:        utility.IfThenElse(cacheData.SNMP.V3Data.Level != nil, cacheData.SNMP.V3Data.Level, configData.SNMP.V3Data.Level),
+				ContextName:  utility.IfThenElse(cacheData.SNMP.V3Data.ContextName != nil, cacheData.SNMP.V3Data.ContextName, configData.SNMP.V3Data.ContextName),
+				User:         utility.IfThenElse(cacheData.SNMP.V3Data.User != nil, cacheData.SNMP.V3Data.User, configData.SNMP.V3Data.User),
+				AuthKey:      utility.IfThenElse(cacheData.SNMP.V3Data.AuthKey != nil, cacheData.SNMP.V3Data.AuthKey, configData.SNMP.V3Data.AuthKey),
+				AuthProtocol: utility.IfThenElse(cacheData.SNMP.V3Data.AuthProtocol != nil, cacheData.SNMP.V3Data.AuthProtocol, configData.SNMP.V3Data.AuthProtocol),
+				PrivKey:      utility.IfThenElse(cacheData.SNMP.V3Data.PrivKey != nil, cacheData.SNMP.V3Data.PrivKey, configData.SNMP.V3Data.PrivKey),
+				PrivProtocol: utility.IfThenElse(cacheData.SNMP.V3Data.PrivProtocol != nil, cacheData.SNMP.V3Data.PrivProtocol, configData.SNMP.V3Data.PrivProtocol),
 			},
 		},
 		HTTP: &network.HTTPConnectionData{
-			HTTPPorts:    utility.SliceUniqueInt(append(cacheData.HTTP.HTTPPorts, configData.HTTP.HTTPPorts...)),
-			HTTPSPorts:   utility.SliceUniqueInt(append(cacheData.HTTP.HTTPSPorts, configData.HTTP.HTTPSPorts...)),
-			AuthUsername: utility.IfThenElse(cacheData.HTTP.AuthUsername != nil, cacheData.HTTP.AuthUsername, configData.HTTP.AuthUsername).(*string),
-			AuthPassword: utility.IfThenElse(cacheData.HTTP.AuthPassword != nil, cacheData.HTTP.AuthPassword, configData.HTTP.AuthPassword).(*string),
+			HTTPPorts:    utility.SliceUnique(append(cacheData.HTTP.HTTPPorts, configData.HTTP.HTTPPorts...)),
+			HTTPSPorts:   utility.SliceUnique(append(cacheData.HTTP.HTTPSPorts, configData.HTTP.HTTPSPorts...)),
+			AuthUsername: utility.IfThenElse(cacheData.HTTP.AuthUsername != nil, cacheData.HTTP.AuthUsername, configData.HTTP.AuthUsername),
+			AuthPassword: utility.IfThenElse(cacheData.HTTP.AuthPassword != nil, cacheData.HTTP.AuthPassword, configData.HTTP.AuthPassword),
 		},
 	}
 
@@ -186,7 +187,7 @@ func (r *BaseRequest) validate(ctx context.Context) error {
 		r.DeviceData.ConnectionData.SNMP.V3Data.PrivProtocol = mergedData.SNMP.V3Data.PrivProtocol
 	}
 
-	if utility.StringSliceContains(r.DeviceData.ConnectionData.SNMP.Versions, "3") {
+	if utility.SliceContains(r.DeviceData.ConnectionData.SNMP.Versions, "3") {
 		if r.DeviceData.ConnectionData.SNMP.V3Data.Level == nil {
 			return errors.New("no SNMP v3 level provided")
 		}

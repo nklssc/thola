@@ -2,6 +2,7 @@ package network
 
 import (
 	"context"
+
 	"github.com/inexio/thola/internal/utility"
 	"github.com/pkg/errors"
 )
@@ -90,8 +91,8 @@ func (r *RequestDeviceConnection) GetIdealConnectionData() ConnectionData {
 	if r.HTTP != nil {
 		var null *string
 		connectionData.HTTP = &HTTPConnectionData{
-			AuthUsername: utility.IfThenElse(r.HTTP.HTTPClient.username == "", null, &r.HTTP.HTTPClient.username).(*string),
-			AuthPassword: utility.IfThenElse(r.HTTP.HTTPClient.password == "", null, &r.HTTP.HTTPClient.password).(*string),
+			AuthUsername: utility.IfThenElse(r.HTTP.HTTPClient.username == "", null, &r.HTTP.HTTPClient.username),
+			AuthPassword: utility.IfThenElse(r.HTTP.HTTPClient.password == "", null, &r.HTTP.HTTPClient.password),
 		}
 
 		if r.HTTP.HTTPClient.useHTTPS {

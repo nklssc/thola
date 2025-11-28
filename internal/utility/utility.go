@@ -1,33 +1,17 @@
 package utility
 
-// IfThenElse is a wrapper for the if condition.
-func IfThenElse(condition bool, t interface{}, e interface{}) interface{} {
+// IfThenElse is a generic wrapper for the if condition.
+func IfThenElse[T any](condition bool, t, e T) T {
 	if condition {
 		return t
 	}
 	return e
 }
 
-// IfThenElseInt is a wrapper for the if condition.
-func IfThenElseInt(condition bool, t int, e int) int {
-	if condition {
-		return t
-	}
-	return e
-}
-
-// IfThenElseString is a wrapper for the if condition.
-func IfThenElseString(condition bool, t string, e string) string {
-	if condition {
-		return t
-	}
-	return e
-}
-
-// SliceUniqueString removes duplicates from a string slice.
-func SliceUniqueString(a []string) []string {
+// SliceUnique removes duplicates from a slice of comparable types.
+func SliceUnique[T comparable](a []T) []T {
 	l := len(a)
-	seen := make(map[string]struct{}, l)
+	seen := make(map[T]struct{}, l)
 	k := 0
 
 	for i := 0; i < l; i++ {
@@ -43,26 +27,7 @@ func SliceUniqueString(a []string) []string {
 	return a[0:k]
 }
 
-// SliceUniqueInt removes duplicates from an int slice.
-func SliceUniqueInt(a []int) []int {
-	l := len(a)
-	seen := make(map[int]struct{}, l)
-	k := 0
-
-	for i := 0; i < l; i++ {
-		v := a[i]
-		if _, ok := seen[v]; ok {
-			continue
-		}
-		seen[v] = struct{}{}
-		a[k] = v
-		k++
-	}
-
-	return a[0:k]
-}
-
-func StringSliceContains(s []string, v string) bool {
+func SliceContains[T comparable](s []T, v T) bool {
 	for _, x := range s {
 		if x == v {
 			return true
@@ -71,18 +36,18 @@ func StringSliceContains(s []string, v string) bool {
 	return false
 }
 
-func SameStringSlice(x, y []string) bool {
+func SameSlice[T comparable](x, y []T) bool {
 	if len(x) != len(y) {
 		return false
 	}
-	// create a map of string -> int
-	diff := make(map[string]int, len(x))
+	// create a map of T -> int
+	diff := make(map[T]int, len(x))
 	for _, _x := range x {
-		// 0 value for int is 0, so just increment a counter for the string
+		// 0 value for int is 0, so just increment a counter for the value
 		diff[_x]++
 	}
 	for _, _y := range y {
-		// If the string _y is not in diff bail out early
+		// If the value _y is not in diff bail out early
 		if _, ok := diff[_y]; !ok {
 			return false
 		}

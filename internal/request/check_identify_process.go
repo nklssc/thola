@@ -6,6 +6,7 @@ package request
 import (
 	"context"
 	"fmt"
+
 	"github.com/inexio/go-monitoringplugin"
 	"github.com/inexio/thola/internal/device"
 	"github.com/inexio/thola/internal/utility"
@@ -28,7 +29,7 @@ func (r *CheckIdentifyRequest) process(ctx context.Context) (Response, error) {
 	identifyResponse := response.(*IdentifyResponse)
 
 	if r.Expectations.Class != "" {
-		r.mon.UpdateStatusIf(identifyResponse.Class != r.Expectations.Class, utility.IfThenElseInt(r.OsDiffWarning, monitoringplugin.WARNING, monitoringplugin.CRITICAL), fmt.Sprintf("OS: expected: \"%s\", got: \"%s\"", r.Expectations.Class, identifyResponse.Class))
+		r.mon.UpdateStatusIf(identifyResponse.Class != r.Expectations.Class, utility.IfThenElse(r.OsDiffWarning, monitoringplugin.WARNING, monitoringplugin.CRITICAL), fmt.Sprintf("OS: expected: \"%s\", got: \"%s\"", r.Expectations.Class, identifyResponse.Class))
 	}
 	if r.Expectations.Properties.Vendor != nil {
 		var failed bool
@@ -42,7 +43,7 @@ func (r *CheckIdentifyRequest) process(ctx context.Context) (Response, error) {
 			failed = true
 			got = *identifyResponse.Properties.Vendor
 		}
-		if r.mon.UpdateStatusIf(failed, utility.IfThenElseInt(r.VendorDiffWarning, monitoringplugin.WARNING, monitoringplugin.CRITICAL), fmt.Sprintf("Vendor: expected: \"%s\", got: %s", *r.Expectations.Properties.Vendor, utility.IfThenElseString(empty, got, "\""+got+"\""))) {
+		if r.mon.UpdateStatusIf(failed, utility.IfThenElse(r.VendorDiffWarning, monitoringplugin.WARNING, monitoringplugin.CRITICAL), fmt.Sprintf("Vendor: expected: \"%s\", got: %s", *r.Expectations.Properties.Vendor, utility.IfThenElse(empty, got, "\""+got+"\""))) {
 			failedExpectations["vendor"] = IdentifyExpectationResult{
 				Expected: *r.Expectations.Properties.Vendor,
 				Got:      got,
@@ -61,7 +62,7 @@ func (r *CheckIdentifyRequest) process(ctx context.Context) (Response, error) {
 			failed = true
 			got = *identifyResponse.Properties.Model
 		}
-		if r.mon.UpdateStatusIf(failed, utility.IfThenElseInt(r.ModelDiffWarning, monitoringplugin.WARNING, monitoringplugin.CRITICAL), fmt.Sprintf("Model: expected: \"%s\", got: %s", *r.Expectations.Properties.Model, utility.IfThenElseString(empty, got, "\""+got+"\""))) {
+		if r.mon.UpdateStatusIf(failed, utility.IfThenElse(r.ModelDiffWarning, monitoringplugin.WARNING, monitoringplugin.CRITICAL), fmt.Sprintf("Model: expected: \"%s\", got: %s", *r.Expectations.Properties.Model, utility.IfThenElse(empty, got, "\""+got+"\""))) {
 			failedExpectations["model"] = IdentifyExpectationResult{
 				Expected: *r.Expectations.Properties.Model,
 				Got:      got,
@@ -80,7 +81,7 @@ func (r *CheckIdentifyRequest) process(ctx context.Context) (Response, error) {
 			failed = true
 			got = *identifyResponse.Properties.ModelSeries
 		}
-		if r.mon.UpdateStatusIf(failed, utility.IfThenElseInt(r.ModelSeriesDiffWarning, monitoringplugin.WARNING, monitoringplugin.CRITICAL), fmt.Sprintf("ModelSeries: expected: \"%s\", got: %s", *r.Expectations.Properties.ModelSeries, utility.IfThenElseString(empty, got, "\""+got+"\""))) {
+		if r.mon.UpdateStatusIf(failed, utility.IfThenElse(r.ModelSeriesDiffWarning, monitoringplugin.WARNING, monitoringplugin.CRITICAL), fmt.Sprintf("ModelSeries: expected: \"%s\", got: %s", *r.Expectations.Properties.ModelSeries, utility.IfThenElse(empty, got, "\""+got+"\""))) {
 			failedExpectations["model_series"] = IdentifyExpectationResult{
 				Expected: *r.Expectations.Properties.ModelSeries,
 				Got:      got,
@@ -99,7 +100,7 @@ func (r *CheckIdentifyRequest) process(ctx context.Context) (Response, error) {
 			failed = true
 			got = *identifyResponse.Properties.SerialNumber
 		}
-		if r.mon.UpdateStatusIf(failed, utility.IfThenElseInt(r.SerialNumberDiffWarning, monitoringplugin.WARNING, monitoringplugin.CRITICAL), fmt.Sprintf("SerialNumber: expected: \"%s\", got: %s", *r.Expectations.Properties.SerialNumber, utility.IfThenElseString(empty, got, "\""+got+"\""))) {
+		if r.mon.UpdateStatusIf(failed, utility.IfThenElse(r.SerialNumberDiffWarning, monitoringplugin.WARNING, monitoringplugin.CRITICAL), fmt.Sprintf("SerialNumber: expected: \"%s\", got: %s", *r.Expectations.Properties.SerialNumber, utility.IfThenElse(empty, got, "\""+got+"\""))) {
 			failedExpectations["serial_number"] = IdentifyExpectationResult{
 				Expected: *r.Expectations.Properties.SerialNumber,
 				Got:      got,
@@ -118,7 +119,7 @@ func (r *CheckIdentifyRequest) process(ctx context.Context) (Response, error) {
 			failed = true
 			got = *identifyResponse.Properties.OSVersion
 		}
-		if r.mon.UpdateStatusIf(failed, utility.IfThenElseInt(r.OsVersionDiffWarning, monitoringplugin.WARNING, monitoringplugin.CRITICAL), fmt.Sprintf("OSVersion: expected: \"%s\", got: %s", *r.Expectations.Properties.OSVersion, utility.IfThenElseString(empty, got, "\""+got+"\""))) {
+		if r.mon.UpdateStatusIf(failed, utility.IfThenElse(r.OsVersionDiffWarning, monitoringplugin.WARNING, monitoringplugin.CRITICAL), fmt.Sprintf("OSVersion: expected: \"%s\", got: %s", *r.Expectations.Properties.OSVersion, utility.IfThenElse(empty, got, "\""+got+"\""))) {
 			failedExpectations["version"] = IdentifyExpectationResult{
 				Expected: *r.Expectations.Properties.OSVersion,
 				Got:      got,
