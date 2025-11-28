@@ -3,6 +3,8 @@ package database
 import (
 	"context"
 	"encoding/json"
+	"time"
+
 	"github.com/inexio/thola/internal/device"
 	"github.com/inexio/thola/internal/network"
 	"github.com/inexio/thola/internal/parser"
@@ -10,7 +12,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	"time"
 )
 
 type sqlDatabase struct {
@@ -87,7 +88,7 @@ func (d *sqlDatabase) CloseConnection(ctx context.Context) error {
 	return d.db.Close()
 }
 
-func (d *sqlDatabase) insertReplaceQuery(ctx context.Context, data interface{}, ip, dataType string) error {
+func (d *sqlDatabase) insertReplaceQuery(ctx context.Context, data any, ip, dataType string) error {
 	JSONData, err := parser.ToJSON(data)
 	if err != nil {
 		return errors.Wrap(err, "failed to marshall data")
@@ -100,7 +101,7 @@ func (d *sqlDatabase) insertReplaceQuery(ctx context.Context, data interface{}, 
 	return nil
 }
 
-func (d *sqlDatabase) getEntry(ctx context.Context, dest interface{}, ip, dataType string) error {
+func (d *sqlDatabase) getEntry(ctx context.Context, dest any, ip, dataType string) error {
 	var results sqlSelectResults
 	err := d.db.SelectContext(ctx, &results, d.db.Rebind("SELECT DATE_FORMAT(time, '%Y-%m-%d %H:%i:%S') as time, data, datatype FROM cache WHERE ip=? AND datatype=?;"), ip, dataType)
 	if err != nil {

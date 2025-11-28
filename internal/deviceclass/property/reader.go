@@ -2,6 +2,7 @@ package property
 
 import (
 	"context"
+
 	"github.com/inexio/thola/internal/device"
 	"github.com/inexio/thola/internal/deviceclass/condition"
 	"github.com/inexio/thola/internal/network"
@@ -12,7 +13,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func InterfaceSlice2Reader(i []interface{}, task condition.RelatedTask, parentProperty Reader) (Reader, error) {
+func InterfaceSlice2Reader(i []any, task condition.RelatedTask, parentProperty Reader) (Reader, error) {
 	var readerSet readerSet
 	for _, i := range i {
 		reader, err := interface2PReader(i, task)
@@ -27,10 +28,10 @@ func InterfaceSlice2Reader(i []interface{}, task condition.RelatedTask, parentPr
 	return &readerSet, nil
 }
 
-func interface2PReader(i interface{}, task condition.RelatedTask) (Reader, error) {
-	m, ok := i.(map[interface{}]interface{})
+func interface2PReader(i any, task condition.RelatedTask) (Reader, error) {
+	m, ok := i.(map[any]any)
 	if !ok {
-		return nil, errors.New("failed to convert interface to map[interface{}]interface{}")
+		return nil, errors.New("failed to convert interface to map[any]any")
 	}
 	if _, ok := m["detection"]; !ok {
 		return nil, errors.New("detection is missing in property")
@@ -54,10 +55,10 @@ func interface2PReader(i interface{}, task condition.RelatedTask) (Reader, error
 			return nil, errors.New("value is missing in constant property reader")
 		}
 		var pr constantReader
-		if _, ok := v.(map[interface{}]interface{}); ok {
+		if _, ok := v.(map[any]any); ok {
 			return nil, errors.New("value must not be a map")
 		}
-		if _, ok := v.([]interface{}); ok {
+		if _, ok := v.([]any); ok {
 			return nil, errors.New("value must not be an array")
 		}
 		pr.Value = value.New(v)
@@ -111,7 +112,7 @@ func interface2PReader(i interface{}, task condition.RelatedTask) (Reader, error
 		return nil, errors.New("invalid detection type " + stringDetection)
 	}
 	if operators, ok := m["operators"]; ok {
-		operatorSlice, ok := operators.([]interface{})
+		operatorSlice, ok := operators.([]any)
 		if !ok {
 			return nil, errors.New("operators has to be an array")
 		}
@@ -244,7 +245,7 @@ func (s *snmpGetReader) GetProperty(ctx context.Context) (value.Value, error) {
 		return nil, errors.Wrap(err, "snmpget failed")
 	}
 
-	var val interface{}
+	var val any
 	if s.UseRawResult {
 		val, err = result[0].GetValueRaw()
 	} else {

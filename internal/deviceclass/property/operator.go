@@ -3,6 +3,10 @@ package property
 import (
 	"context"
 	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
+
 	"github.com/inexio/thola/internal/deviceclass/condition"
 	"github.com/inexio/thola/internal/mapping"
 	"github.com/inexio/thola/internal/network"
@@ -12,17 +16,14 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"github.com/shopspring/decimal"
-	"regexp"
-	"strconv"
-	"strings"
 )
 
-func InterfaceSlice2Operators(i []interface{}, task condition.RelatedTask) (Operators, error) {
+func InterfaceSlice2Operators(i []any, task condition.RelatedTask) (Operators, error) {
 	var propertyOperators Operators
 	for _, opInterface := range i {
-		m, ok := opInterface.(map[interface{}]interface{})
+		m, ok := opInterface.(map[any]any)
 		if !ok {
-			return nil, errors.New("failed to convert interface to map[interface{}]interface{}")
+			return nil, errors.New("failed to convert interface to map[any]any")
 		}
 		if _, ok := m["type"]; !ok {
 			return nil, errors.New("operator type is missing!")
@@ -192,7 +193,7 @@ func InterfaceSlice2Operators(i []interface{}, task condition.RelatedTask) (Oper
 				var mapModifier mapModifier
 				mapModifier.ignoreOnMismatch = ignoreOnMismatch
 
-				mappings, ok := mappingsInterface.(map[interface{}]interface{})
+				mappings, ok := mappingsInterface.(map[any]any)
 				if !ok {
 					file, ok := mappingsInterface.(string)
 					if !ok {
@@ -341,13 +342,13 @@ func InterfaceSlice2Operators(i []interface{}, task condition.RelatedTask) (Oper
 			}
 
 			// following operators
-			cases, ok := m["cases"].([]interface{})
+			cases, ok := m["cases"].([]any)
 			if !ok {
 				return nil, errors.New("cases are missing in switch operator, or it is not an array")
 			}
 
 			for _, cInterface := range cases {
-				c, ok := cInterface.(map[interface{}]interface{})
+				c, ok := cInterface.(map[any]any)
 				if !ok {
 					return nil, errors.New("switch case needs to be a map")
 				}
@@ -359,13 +360,13 @@ func InterfaceSlice2Operators(i []interface{}, task condition.RelatedTask) (Oper
 					}
 					caseString = strconv.Itoa(caseInt)
 				}
-				subOperatorsInterface, ok := c["operators"].([]interface{})
+				subOperatorsInterface, ok := c["operators"].([]any)
 				if !ok {
 					return nil, fmt.Errorf("operators are missing in switch operator case, or it is not an array, in switch case '%s'", caseString)
 				}
 				subOperators, err := InterfaceSlice2Operators(subOperatorsInterface, task)
 				if err != nil {
-					return nil, errors.Wrapf(err, "failed to convert []interface{} to propertyOperators in switch case '%s'", caseString)
+					return nil, errors.Wrapf(err, "failed to convert []any to propertyOperators in switch case '%s'", caseString)
 				}
 				switchCase := stringSwitchCase{
 					caseString: caseString,
@@ -462,7 +463,7 @@ func (o *switchOperatorAdapter) returnOnError() bool {
 	return checkReturnOnError(o.operator)
 }
 
-func checkReturnOnError(i interface{}) bool {
+func checkReturnOnError(i any) bool {
 	if x, ok := i.(returnOnErrorOperator); ok {
 		return x.returnOnError()
 	}

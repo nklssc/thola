@@ -1,8 +1,9 @@
 package network
 
 import (
-	"github.com/inexio/thola/internal/tholaerr"
 	"sync"
+
+	"github.com/inexio/thola/internal/tholaerr"
 )
 
 /*
@@ -20,7 +21,7 @@ func newRequestCache() requestCache {
 	}
 }
 
-func (r *requestCache) add(identifier string, result interface{}, err error) {
+func (r *requestCache) add(identifier string, result any, err error) {
 	r.Lock()
 	defer r.Unlock()
 	(r.cache)[identifier] = cachedRequestResult{res: result, err: err}
@@ -51,7 +52,7 @@ func (r *requestCache) get(identifier string) (cachedRequestResult, error) {
 
 type cachedRequestResult struct {
 	err error
-	res interface{}
+	res any
 }
 
 func (d *cachedRequestResult) returnedError() bool {

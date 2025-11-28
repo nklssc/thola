@@ -157,7 +157,7 @@ type deviceClassSNMP struct {
 // yamlDeviceClass represents the structure and the parts of a yaml device class.
 type yamlDeviceClass struct {
 	Name       string                    `yaml:"name"`
-	Match      interface{}               `yaml:"match"`
+	Match      any                       `yaml:"match"`
 	Identify   yamlDeviceClassIdentify   `yaml:"identify"`
 	Config     yamlDeviceClassConfig     `yaml:"config"`
 	Components yamlDeviceClassComponents `yaml:"components"`
@@ -190,11 +190,11 @@ type yamlDeviceClassConfig struct {
 
 // yamlDeviceClassIdentifyProperties represents the identify properties of a yaml device class.
 type yamlDeviceClassIdentifyProperties struct {
-	Vendor       []interface{} `yaml:"vendor"`
-	Model        []interface{} `yaml:"model"`
-	ModelSeries  []interface{} `yaml:"model_series"`
-	SerialNumber []interface{} `yaml:"serial_number"`
-	OSVersion    []interface{} `yaml:"os_version"`
+	Vendor       []any `yaml:"vendor"`
+	Model        []any `yaml:"model"`
+	ModelSeries  []any `yaml:"model_series"`
+	SerialNumber []any `yaml:"serial_number"`
+	OSVersion    []any `yaml:"os_version"`
 }
 
 //
@@ -203,76 +203,76 @@ type yamlDeviceClassIdentifyProperties struct {
 
 // yamlComponentsUPSProperties represents the specific properties of ups components of a yaml device class.
 type yamlComponentsUPSProperties struct {
-	AlarmLowVoltageDisconnect []interface{} `yaml:"alarm_low_voltage_disconnect"`
-	BatteryAmperage           []interface{} `yaml:"battery_amperage"`
-	BatteryCapacity           []interface{} `yaml:"battery_capacity"`
-	BatteryCurrent            []interface{} `yaml:"battery_current"`
-	BatteryRemainingTime      []interface{} `yaml:"battery_remaining_time"`
-	BatteryTemperature        []interface{} `yaml:"battery_temperature"`
-	BatteryVoltage            []interface{} `yaml:"battery_voltage"`
-	CurrentLoad               []interface{} `yaml:"current_load"`
-	MainsVoltageApplied       []interface{} `yaml:"mains_voltage_applied"`
-	RectifierCurrent          []interface{} `yaml:"rectifier_current"`
-	SystemVoltage             []interface{} `yaml:"system_voltage"`
+	AlarmLowVoltageDisconnect []any `yaml:"alarm_low_voltage_disconnect"`
+	BatteryAmperage           []any `yaml:"battery_amperage"`
+	BatteryCapacity           []any `yaml:"battery_capacity"`
+	BatteryCurrent            []any `yaml:"battery_current"`
+	BatteryRemainingTime      []any `yaml:"battery_remaining_time"`
+	BatteryTemperature        []any `yaml:"battery_temperature"`
+	BatteryVoltage            []any `yaml:"battery_voltage"`
+	CurrentLoad               []any `yaml:"current_load"`
+	MainsVoltageApplied       []any `yaml:"mains_voltage_applied"`
+	RectifierCurrent          []any `yaml:"rectifier_current"`
+	SystemVoltage             []any `yaml:"system_voltage"`
 }
 
 // yamlComponentsCPUProperties represents the specific properties of cpu components of a yaml device class.
 type yamlComponentsCPUProperties struct {
-	Properties interface{} `yaml:"properties"`
+	Properties any `yaml:"properties"`
 }
 
 // yamlComponentsMemoryProperties represents the specific properties of memory components of a yaml device class.
 type yamlComponentsMemoryProperties struct {
-	Properties interface{} `yaml:"properties"`
+	Properties any `yaml:"properties"`
 }
 
 // yamlComponentsSBCProperties represents the specific properties of sbc components of a yaml device class.
 type yamlComponentsSBCProperties struct {
-	Agents                   interface{}   `yaml:"agents"`
-	Realms                   interface{}   `yaml:"realms"`
-	GlobalCallPerSecond      []interface{} `yaml:"global_call_per_second"`
-	GlobalConcurrentSessions []interface{} `yaml:"global_concurrent_sessions"`
-	ActiveLocalContacts      []interface{} `yaml:"active_local_contacts"`
-	TranscodingCapacity      []interface{} `yaml:"transcoding_capacity"`
-	LicenseCapacity          []interface{} `yaml:"license_capacity"`
-	SystemRedundancy         []interface{} `yaml:"system_redundancy"`
-	SystemHealthScore        []interface{} `yaml:"system_health_score"`
+	Agents                   any   `yaml:"agents"`
+	Realms                   any   `yaml:"realms"`
+	GlobalCallPerSecond      []any `yaml:"global_call_per_second"`
+	GlobalConcurrentSessions []any `yaml:"global_concurrent_sessions"`
+	ActiveLocalContacts      []any `yaml:"active_local_contacts"`
+	TranscodingCapacity      []any `yaml:"transcoding_capacity"`
+	LicenseCapacity          []any `yaml:"license_capacity"`
+	SystemRedundancy         []any `yaml:"system_redundancy"`
+	SystemHealthScore        []any `yaml:"system_health_score"`
 }
 
 // yamlComponentsServerProperties represents the specific properties of server components of a yaml device class.
 type yamlComponentsServerProperties struct {
-	Procs []interface{} `yaml:"procs"`
-	Users []interface{} `yaml:"users"`
+	Procs []any `yaml:"procs"`
+	Users []any `yaml:"users"`
 }
 
 // yamlComponentsSystemProperties represents the specific properties of system components of a yaml device class.
 type yamlComponentsSystemProperties struct {
-	Name        []interface{} `yaml:"name"`
-	Description []interface{} `yaml:"description"`
-	Contact     []interface{} `yaml:"contact"`
-	Location    []interface{} `yaml:"location"`
-	Uptime      []interface{} `yaml:"uptime"`
+	Name        []any `yaml:"name"`
+	Description []any `yaml:"description"`
+	Contact     []any `yaml:"contact"`
+	Location    []any `yaml:"location"`
+	Uptime      []any `yaml:"uptime"`
 }
 
 // yamlComponentsDiskProperties represents the specific properties of disk components of a yaml device class.
 type yamlComponentsDiskProperties struct {
-	Properties interface{} `yaml:"properties"`
+	Properties any `yaml:"properties"`
 }
 
 // yamlComponentsHardwareHealthProperties represents the specific properties of hardware health components of a yaml device class.
 type yamlComponentsHardwareHealthProperties struct {
-	EnvironmentMonitorState []interface{} `yaml:"environment_monitor_state"`
-	Fans                    interface{}   `yaml:"fans"`
-	PowerSupply             interface{}   `yaml:"power_supply"`
-	Temperature             interface{}   `yaml:"temperature"`
-	Voltage                 interface{}   `yaml:"voltage"`
+	EnvironmentMonitorState []any `yaml:"environment_monitor_state"`
+	Fans                    any   `yaml:"fans"`
+	PowerSupply             any   `yaml:"power_supply"`
+	Temperature             any   `yaml:"temperature"`
+	Voltage                 any   `yaml:"voltage"`
 }
 
 // yamlComponentsHa represents the specific properties of HA components of a yaml device class.
 type yamlComponentsHighAvailability struct {
-	State []interface{}
-	Role  []interface{}
-	Nodes []interface{}
+	State []any
+	Role  []any
+	Nodes []any
 }
 
 //
@@ -280,8 +280,8 @@ type yamlComponentsHighAvailability struct {
 //
 
 type yamlComponentsInterfaces struct {
-	Count      []interface{} `yaml:"count"`
-	Properties interface{}   `yaml:"properties"`
+	Count      []any `yaml:"count"`
+	Properties any   `yaml:"properties"`
 }
 
 // GetHierarchy returns the hierarchy of device classes merged with their corresponding code communicator.

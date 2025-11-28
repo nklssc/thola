@@ -3,6 +3,7 @@ package groupproperty
 import (
 	"context"
 	"fmt"
+
 	"github.com/inexio/thola/internal/network"
 	"github.com/inexio/thola/internal/value"
 	"github.com/mitchellh/mapstructure"
@@ -10,10 +11,10 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func Interface2Reader(i interface{}, parentReader Reader) (Reader, error) {
-	m, ok := i.(map[interface{}]interface{})
+func Interface2Reader(i any, parentReader Reader) (Reader, error) {
+	m, ok := i.(map[any]any)
 	if !ok {
-		return nil, errors.New("failed to convert group properties to map[interface{}]interface{}")
+		return nil, errors.New("failed to convert group properties to map[any]any")
 	}
 	if _, ok := m["detection"]; !ok {
 		return nil, errors.New("detection is missing in group properties")
@@ -100,13 +101,13 @@ func Interface2Reader(i interface{}, parentReader Reader) (Reader, error) {
 	}
 }
 
-type propertyGroup map[string]interface{}
+type propertyGroup map[string]any
 
-func (g *propertyGroup) decode(destination interface{}) error {
+func (g *propertyGroup) decode(destination any) error {
 	return mapstructure.WeakDecode(g, destination)
 }
 
-func (g *propertyGroup) encode(data interface{}) error {
+func (g *propertyGroup) encode(data any) error {
 	return mapstructure.WeakDecode(data, g)
 }
 
@@ -132,11 +133,11 @@ func (g *propertyGroup) merge(overwrite propertyGroup) propertyGroup {
 
 type PropertyGroups []propertyGroup
 
-func (g *PropertyGroups) Decode(destination interface{}) error {
+func (g *PropertyGroups) Decode(destination any) error {
 	return mapstructure.WeakDecode(g, destination)
 }
 
-func (g *PropertyGroups) Encode(data interface{}) error {
+func (g *PropertyGroups) Encode(data any) error {
 	return mapstructure.WeakDecode(data, g)
 }
 
@@ -225,7 +226,7 @@ func (s snmpReader) getProperty(ctx context.Context) (PropertyGroups, []value.Va
 				smallestIndex = index
 			}
 		}
-		x, ok := groups[smallestIndex].(map[string]interface{})
+		x, ok := groups[smallestIndex].(map[string]any)
 		if !ok {
 			return nil, nil, fmt.Errorf("oidReader for index '%s' returned unexpected data type: %T", smallestIndex, groups[smallestIndex])
 		}

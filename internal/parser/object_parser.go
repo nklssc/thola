@@ -35,7 +35,7 @@ type toCheckPluginOutputParser interface {
 }
 
 // Parse parses the object into the desired format
-func Parse(i interface{}, format string) ([]byte, error) {
+func Parse(i any, format string) ([]byte, error) {
 	switch format {
 	case "json":
 		return ToJSON(i)
@@ -51,7 +51,7 @@ func Parse(i interface{}, format string) ([]byte, error) {
 }
 
 // ToXML parses the object to XML.
-func ToXML(i interface{}) ([]byte, error) {
+func ToXML(i any) ([]byte, error) {
 	i = checkIfError(i)
 	if p, ok := i.(xmlParser); ok {
 		return p.ToXML()
@@ -64,7 +64,7 @@ func ToXML(i interface{}) ([]byte, error) {
 }
 
 // ToJSON parses the object to JSON.
-func ToJSON(i interface{}) ([]byte, error) {
+func ToJSON(i any) ([]byte, error) {
 	i = checkIfError(i)
 	if p, ok := i.(jsonParser); ok {
 		return p.ToJSON()
@@ -77,7 +77,7 @@ func ToJSON(i interface{}) ([]byte, error) {
 }
 
 // ToCSV parses the object to CSV.
-func ToCSV(i interface{}) ([]byte, error) {
+func ToCSV(i any) ([]byte, error) {
 	i = checkIfError(i)
 	if p, ok := i.(csvParser); ok {
 		return p.ToCSV()
@@ -90,7 +90,7 @@ func ToCSV(i interface{}) ([]byte, error) {
 }
 
 // ToHumanReadable parses the object to a human readable format.
-func ToHumanReadable(i interface{}) ([]byte, error) {
+func ToHumanReadable(i any) ([]byte, error) {
 	i = checkIfError(i)
 	if p, ok := i.(humanReadableParser); ok {
 		return p.ToHumanReadable()
@@ -100,7 +100,7 @@ func ToHumanReadable(i interface{}) ([]byte, error) {
 }
 
 // ToCheckPluginOutput parses the object to a check plugin format.
-func ToCheckPluginOutput(i interface{}) ([]byte, error) {
+func ToCheckPluginOutput(i any) ([]byte, error) {
 	if p, ok := i.(toCheckPluginOutputParser); ok {
 		return p.ToCheckPluginOutput()
 	}
@@ -108,7 +108,7 @@ func ToCheckPluginOutput(i interface{}) ([]byte, error) {
 }
 
 // ToStruct parses the formatted content into the struct with the correct unmarshal method.
-func ToStruct(contents []byte, format string, i interface{}) error {
+func ToStruct(contents []byte, format string, i any) error {
 	switch format {
 	case "json":
 		d := json.NewDecoder(bytes.NewReader(contents))
@@ -121,7 +121,7 @@ func ToStruct(contents []byte, format string, i interface{}) error {
 	}
 }
 
-func checkIfError(i interface{}) interface{} {
+func checkIfError(i any) any {
 	if err, ok := i.(error); ok {
 		i = tholaerr.OutputError{Error: err.Error()}
 	}

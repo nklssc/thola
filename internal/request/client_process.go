@@ -359,7 +359,7 @@ func sendToAPI(ctx context.Context, request Request, path, format string) ([]byt
 	}
 
 	if restyResponse.IsError() {
-		var errorMessageFetcher map[string]interface{}
+		var errorMessageFetcher map[string]any
 		err = parser.ToStruct(restyResponse.Body(), format, &errorMessageFetcher)
 		if err != nil {
 			resStr := strings.Trim(fmt.Sprintf("%s", restyResponse.Body()), " \t\n")

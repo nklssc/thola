@@ -1137,7 +1137,7 @@ func handleError(ctx echo.Context, err error) error {
 	return returnInFormat(ctx, http.StatusBadRequest, tholaerr.OutputError{Error: "Request failed: " + err.Error()})
 }
 
-func returnInFormat(ctx echo.Context, statusCode int, resp interface{}) error {
+func returnInFormat(ctx echo.Context, statusCode int, resp any) error {
 	if viper.GetString("api.format") == "json" {
 		return ctx.JSON(statusCode, resp)
 	} else if viper.GetString("api.format") == "xml" {

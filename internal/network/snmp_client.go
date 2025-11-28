@@ -724,11 +724,11 @@ func (s *snmpClient) GetV3PrivProto() *string {
 type SNMPResponse struct {
 	oid      OID
 	snmpType gosnmp.Asn1BER
-	value    interface{}
+	value    any
 }
 
 // NewSNMPResponse creates a new SNMP Response
-func NewSNMPResponse(oid OID, snmpType gosnmp.Asn1BER, value interface{}) SNMPResponse {
+func NewSNMPResponse(oid OID, snmpType gosnmp.Asn1BER, value any) SNMPResponse {
 	return SNMPResponse{
 		oid:      oid,
 		snmpType: snmpType,
@@ -769,7 +769,7 @@ func (s *SNMPResponse) GetValueRaw() (value.Value, error) {
 	return value.New(s.value), nil
 }
 
-func (s *SNMPResponse) getValueDecoded() (interface{}, error) {
+func (s *SNMPResponse) getValueDecoded() (any, error) {
 	var err error
 	i := s.value
 	switch x := s.value.(type) {

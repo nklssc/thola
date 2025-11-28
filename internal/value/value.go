@@ -2,10 +2,11 @@ package value
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"math/big"
 	"reflect"
 	"strconv"
+
+	"github.com/pkg/errors"
 )
 
 // Value represents a value of any type.
@@ -27,7 +28,7 @@ type Value interface {
 type value string
 
 // New creates a new value
-func New(i interface{}) Value {
+func New(i any) Value {
 	var v value
 	switch t := i.(type) {
 	case []byte:
@@ -82,9 +83,10 @@ func (v value) IsEmpty() bool {
 }
 
 // Cmp compares two values
-//   -1 if receiver < val
-//    0 if receiver == val
-//   +1 if receiver > val
+//
+//	-1 if receiver < val
+//	 0 if receiver == val
+//	+1 if receiver > val
 func (v value) Cmp(val Value) (int, error) {
 	var v1, v2 big.Float
 	_, _, err := v1.Parse(v.String(), 10)

@@ -15,10 +15,10 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func Interface2Condition(i interface{}, task RelatedTask) (Condition, error) {
-	m, ok := i.(map[interface{}]interface{})
+func Interface2Condition(i any, task RelatedTask) (Condition, error) {
+	m, ok := i.(map[any]any)
 	if !ok {
-		return nil, errors.New("failed to convert interface to map[interface{}]interface{}")
+		return nil, errors.New("failed to convert interface to map[any]any")
 	}
 
 	var stringType string
@@ -412,7 +412,7 @@ func GetAlwaysTrueCondition() Condition {
 
 type yamlConditionSet struct {
 	LogicalOperator LogicalOperator `mapstructure:"logical_operator"`
-	Conditions      []interface{}
+	Conditions      []any
 }
 
 func (y *yamlConditionSet) convert() (Condition, error) {

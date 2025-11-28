@@ -2,6 +2,18 @@ package test
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path"
+	"path/filepath"
+	"reflect"
+	"regexp"
+	"runtime"
+	"sort"
+	"strings"
+	"sync/atomic"
+	"testing"
+
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/inexio/go-monitoringplugin"
@@ -15,17 +27,6 @@ import (
 	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"os"
-	"path"
-	"path/filepath"
-	"reflect"
-	"regexp"
-	"runtime"
-	"sort"
-	"strings"
-	"sync/atomic"
-	"testing"
 )
 
 type testDevice struct {
@@ -498,7 +499,7 @@ func buildTestDeviceSNMPSim(snmpCommunity string) (*testDeviceInfoSNMPSim, error
 	return &testDeviceInfo, nil
 }
 
-func isNotEmpty(x, y interface{}) bool {
+func isNotEmpty(x, y any) bool {
 	vx, vy := reflect.ValueOf(x), reflect.ValueOf(y)
 	return !((x != nil && y != nil && vx.Type() == vy.Type()) &&
 		(vx.Kind() == reflect.Slice || vx.Kind() == reflect.Map) &&

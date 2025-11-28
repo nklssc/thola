@@ -3,6 +3,7 @@ package groupproperty
 import (
 	"context"
 	"fmt"
+
 	relatedTask "github.com/inexio/thola/internal/deviceclass/condition"
 	"github.com/inexio/thola/internal/deviceclass/property"
 	"github.com/inexio/thola/internal/network"
@@ -15,8 +16,8 @@ import (
 
 //go:generate go run github.com/vektra/mockery/v2 --name=OIDReader --inpackage
 
-func Interface2OIDReader(i interface{}) (OIDReader, error) {
-	values, ok := i.(map[interface{}]interface{})
+func Interface2OIDReader(i any) (OIDReader, error) {
+	values, ok := i.(map[any]any)
 	if !ok {
 		return nil, errors.New("values needs to be a map")
 	}
@@ -24,7 +25,7 @@ func Interface2OIDReader(i interface{}) (OIDReader, error) {
 	result := make(deviceClassOIDs)
 
 	for val, data := range values {
-		dataMap, ok := data.(map[interface{}]interface{})
+		dataMap, ok := data.(map[any]any)
 		if !ok {
 			return nil, errors.New("value data needs to be a map")
 		}
@@ -73,14 +74,14 @@ func Interface2OIDReader(i interface{}) (OIDReader, error) {
 }
 
 type OIDReader interface {
-	readOID(context.Context, []string, bool) (map[string]interface{}, error)
+	readOID(context.Context, []string, bool) (map[string]any, error)
 }
 
 // deviceClassOIDs is a recursive data structure which maps labels to either a single OID (deviceClassOID) or another deviceClassOIDs
 type deviceClassOIDs map[string]OIDReader
 
-func (d *deviceClassOIDs) readOID(ctx context.Context, indices []string, skipEmpty bool) (map[string]interface{}, error) {
-	result := make(map[string]map[string]interface{})
+func (d *deviceClassOIDs) readOID(ctx context.Context, indices []string, skipEmpty bool) (map[string]any, error) {
+	result := make(map[string]map[string]any)
 	for label, reader := range *d {
 		res, err := reader.readOID(ctx, indices, skipEmpty)
 		if err != nil {
@@ -93,13 +94,13 @@ func (d *deviceClassOIDs) readOID(ctx context.Context, indices []string, skipEmp
 		for ifIndex, v := range res {
 			// ifIndex was not known before, so create a new group
 			if _, ok := result[ifIndex]; !ok {
-				result[ifIndex] = make(map[string]interface{})
+				result[ifIndex] = make(map[string]any)
 			}
 			result[ifIndex][label] = v
 		}
 	}
 
-	r := make(map[string]interface{})
+	r := make(map[string]any)
 	for k, v := range result {
 		r[k] = v
 	}
@@ -135,8 +136,8 @@ type deviceClassOID struct {
 	indicesMapping OIDReader
 }
 
-func (d *deviceClassOID) readOID(ctx context.Context, indices []string, skipEmpty bool) (map[string]interface{}, error) {
-	result := make(map[string]interface{})
+func (d *deviceClassOID) readOID(ctx context.Context, indices []string, skipEmpty bool) (map[string]any, error) {
+	result := make(map[string]any)
 
 	logger := log.Ctx(ctx).With().Str("oid", d.OID.String()).Logger()
 	ctx = logger.WithContext(ctx)
@@ -230,7 +231,7 @@ func (d *deviceClassOID) readOID(ctx context.Context, indices []string, skipEmpt
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to read mapping indices")
 		}
-		mappedResult := make(map[string]interface{})
+		mappedResult := make(map[string]any)
 
 		for k, v := range result {
 			mappedIdx, ok := mappingIndices[k]
@@ -255,13 +256,13 @@ func (d *deviceClassOID) readOID(ctx context.Context, indices []string, skipEmpt
 
 type emptyOIDReader struct{}
 
-func (n *emptyOIDReader) readOID(context.Context, []string, bool) (map[string]interface{}, error) {
+func (n *emptyOIDReader) readOID(context.Context, []string, bool) (map[string]any, error) {
 	return nil, tholaerr.NewComponentNotFoundError("oid is ignored")
 }
 
 type yamlComponentsOID struct {
 	network.SNMPGetConfiguration `mapstructure:",squash"`
-	Operators                    []interface{}
+	Operators                    []any
 	IndicesMapping               *yamlComponentsOID `mapstructure:"indices_mapping"`
 }
 

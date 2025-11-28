@@ -71,7 +71,7 @@ func TestDeviceClassOID_readOID(t *testing.T) {
 		},
 	}
 
-	expected := map[string]interface{}{
+	expected := map[string]any{
 		"1": value.New("Port 1"),
 		"2": value.New("Port 2"),
 		"3": value.New("Port 3"),
@@ -108,7 +108,7 @@ func TestDeviceClassOID_readOID_skipEmpty(t *testing.T) {
 		},
 	}
 
-	expected := map[string]interface{}{
+	expected := map[string]any{
 		"1": value.New("Port 1"),
 		"2": value.New("Port 2"),
 		"3": value.New("Port 3"),
@@ -146,7 +146,7 @@ func TestDeviceClassOID_readOID_withIndices(t *testing.T) {
 		},
 	}
 
-	expected := map[string]interface{}{
+	expected := map[string]any{
 		"1": value.New("Port 1"),
 		"2": value.New("Port 2"),
 		"3": value.New("Port 3"),
@@ -185,7 +185,7 @@ func TestDeviceClassOID_readOID_withIndicesSkipEmpty(t *testing.T) {
 		},
 	}
 
-	expected := map[string]interface{}{
+	expected := map[string]any{
 		"1": value.New("Port 1"),
 		"2": value.New("Port 2"),
 		"3": value.New("Port 3"),
@@ -234,7 +234,7 @@ func TestDeviceClassOID_readOID_indicesMapping(t *testing.T) {
 		indicesMapping: &indicesMappingDeviceClassOid,
 	}
 
-	expected := map[string]interface{}{
+	expected := map[string]any{
 		"1": value.New("Port 3"),
 		"2": value.New("Port 2"),
 		"3": value.New("Port 1"),
@@ -282,7 +282,7 @@ func TestDeviceClassOID_readOID_indicesMappingWithIndices(t *testing.T) {
 		indicesMapping: &indicesMappingDeviceClassOid,
 	}
 
-	expected := map[string]interface{}{
+	expected := map[string]any{
 		"1": value.New("Port 3"),
 		"2": value.New("Port 2"),
 		"3": value.New("Port 1"),
@@ -302,14 +302,14 @@ func TestDeviceClassOIDs_readOID(t *testing.T) {
 
 	ifIndexOidReader.
 		On("readOID", ctx, []string(nil), true).
-		Return(map[string]interface{}{
+		Return(map[string]any{
 			"1": value.New(1),
 			"2": value.New(2),
 			"3": value.New(3),
 		}, nil)
 	ifDescrOidReader.
 		On("readOID", ctx, []string(nil), true).
-		Return(map[string]interface{}{
+		Return(map[string]any{
 			"1": value.New("Port 1"),
 			"2": value.New("Port 2"),
 			"3": value.New("Port 3"),
@@ -320,16 +320,16 @@ func TestDeviceClassOIDs_readOID(t *testing.T) {
 		"ifDescr": &ifDescrOidReader,
 	}
 
-	expected := map[string]interface{}{
-		"1": map[string]interface{}{
+	expected := map[string]any{
+		"1": map[string]any{
 			"ifIndex": value.New(1),
 			"ifDescr": value.New("Port 1"),
 		},
-		"2": map[string]interface{}{
+		"2": map[string]any{
 			"ifIndex": value.New(2),
 			"ifDescr": value.New("Port 2"),
 		},
-		"3": map[string]interface{}{
+		"3": map[string]any{
 			"ifIndex": value.New(3),
 			"ifDescr": value.New("Port 3"),
 		},
@@ -350,26 +350,26 @@ func TestDeviceClassOIDs_readOID_multipleLevel(t *testing.T) {
 
 	ifIndexOidReader.
 		On("readOID", ctx, []string(nil), true).
-		Return(map[string]interface{}{
+		Return(map[string]any{
 			"1": value.New("1"),
 			"2": value.New("2"),
 			"3": value.New("3"),
 		}, nil)
 	ifDescrOidReader.
 		On("readOID", ctx, []string(nil), true).
-		Return(map[string]interface{}{
+		Return(map[string]any{
 			"1": value.New("Port 1"),
 			"2": value.New("Port 2"),
 			"3": value.New("Port 3"),
 		}, nil)
 	radioInterfaceOidReader.
 		On("readOID", ctx, []string(nil), true).
-		Return(map[string]interface{}{
-			"1": map[string]interface{}{
+		Return(map[string]any{
+			"1": map[string]any{
 				"level_in":  value.New(1),
 				"level_out": value.New(-1),
 			},
-			"2": map[string]interface{}{
+			"2": map[string]any{
 				"level_in":  value.New(2),
 				"level_out": value.New(-2),
 			},
@@ -381,24 +381,24 @@ func TestDeviceClassOIDs_readOID_multipleLevel(t *testing.T) {
 		"radio":   &radioInterfaceOidReader,
 	}
 
-	expected := map[string]interface{}{
-		"1": map[string]interface{}{
+	expected := map[string]any{
+		"1": map[string]any{
 			"ifIndex": value.New(1),
 			"ifDescr": value.New("Port 1"),
-			"radio": map[string]interface{}{
+			"radio": map[string]any{
 				"level_in":  value.New(1),
 				"level_out": value.New(-1),
 			},
 		},
-		"2": map[string]interface{}{
+		"2": map[string]any{
 			"ifIndex": value.New(2),
 			"ifDescr": value.New("Port 2"),
-			"radio": map[string]interface{}{
+			"radio": map[string]any{
 				"level_in":  value.New(2),
 				"level_out": value.New(-2),
 			},
 		},
-		"3": map[string]interface{}{
+		"3": map[string]any{
 			"ifIndex": value.New(3),
 			"ifDescr": value.New("Port 3"),
 		},
@@ -416,16 +416,16 @@ func TestSNMPReader_getProperty(t *testing.T) {
 
 	oidReader.
 		On("readOID", ctx, []string(nil), true).
-		Return(map[string]interface{}{
-			"1": map[string]interface{}{
+		Return(map[string]any{
+			"1": map[string]any{
 				"ifIndex": value.New(1),
 				"ifDescr": value.New("Port 1"),
 			},
-			"2": map[string]interface{}{
+			"2": map[string]any{
 				"ifIndex": value.New(2),
 				"ifDescr": value.New("Port 2"),
 			},
-			"3": map[string]interface{}{
+			"3": map[string]any{
 				"ifIndex": value.New(3),
 				"ifDescr": value.New("Port 3"),
 			},
@@ -541,16 +541,16 @@ func TestSNMPReader_getProperty_getsInsteadOfWalk(t *testing.T) {
 				"3",
 			})
 		}), true).
-		Return(map[string]interface{}{
-			"1": map[string]interface{}{
+		Return(map[string]any{
+			"1": map[string]any{
 				"ifIndex": value.New(1),
 				"ifDescr": value.New("Port 1"),
 			},
-			"2": map[string]interface{}{
+			"2": map[string]any{
 				"ifIndex": value.New(2),
 				"ifDescr": value.New("Port 2"),
 			},
-			"3": map[string]interface{}{
+			"3": map[string]any{
 				"ifIndex": value.New(3),
 				"ifDescr": value.New("Port 3"),
 			},
@@ -558,14 +558,14 @@ func TestSNMPReader_getProperty_getsInsteadOfWalk(t *testing.T) {
 
 	indexOIDReader.
 		On("readOID", ctx, []string(nil), false).
-		Return(map[string]interface{}{
-			"1": map[string]interface{}{
+		Return(map[string]any{
+			"1": map[string]any{
 				"ifIndex": value.New(1),
 			},
-			"2": map[string]interface{}{
+			"2": map[string]any{
 				"ifIndex": value.New(2),
 			},
-			"3": map[string]interface{}{
+			"3": map[string]any{
 				"ifIndex": value.New(3),
 			},
 		}, nil)
